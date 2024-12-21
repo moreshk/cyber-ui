@@ -11,7 +11,7 @@ export default function Home() {
     fetchTokens();
   }, []);
 
-  if (isLoading && !data) {
+  if (isLoading || !data) {
     <div>Loading</div>;
   }
 

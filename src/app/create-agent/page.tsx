@@ -26,6 +26,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/axios";
+import { Coin } from "../../../type";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z
@@ -67,6 +69,7 @@ const formSchema = z.object({
 
 export function Page() {
   const [loading, setLoading] = useState(false);
+  const { push } = useRouter();
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -97,12 +100,12 @@ export function Page() {
       formData.append("twitter", values.twitter || "");
       formData.append("telegram", values.telegram || "");
       formData.append("website", values.website || "");
-      const response = await api.post("/v1/coin/create", formData, {
+      const response = await api.post<Coin>("/v1/coin/create", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response);
+      push(`/token/${response.data.mintAddress}`);
       toast.success("Token created successfully!");
     } catch (error: unknown) {
       console.log(error);
