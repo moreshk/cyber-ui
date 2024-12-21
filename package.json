@@ -39,6 +39,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.1",
+    "reconnecting-websocket": "^4.4.0",
     "shadcn-ui": "latest",
     "sonner": "^1.7.1",
     "swr": "^2.2.5",
