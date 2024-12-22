@@ -20,7 +20,6 @@ const useTokenDetailsStore = create<TokenDetailsStore>((set) => ({
       const { data } = await api.get<Coin>(
         `/v1/token/details?token=${address}`
       );
-      console.log(data);
       set({ data: data, isLoading: false });
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
