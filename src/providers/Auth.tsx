@@ -39,7 +39,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           user: { walletAddress },
         },
       } = await api.get<{ user: { walletAddress: string } }>("/v1/me");
-      console.log("hello", walletAddress);
       if (walletAddress === publicKey.toString()) {
         setIsAuthenticated(true);
         setIsLoading(false);
