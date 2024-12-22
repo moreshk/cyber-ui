@@ -15,7 +15,6 @@ const Page = () => {
   if (isLoading || !data) {
     <div>Loading</div>;
   }
-  console.log(data);
   if (data) {
     return (
       <div>

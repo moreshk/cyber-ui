@@ -39,14 +39,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           user: { walletAddress },
         },
       } = await api.get<{ user: { walletAddress: string } }>("/v1/me");
+      console.log("hello", walletAddress);
       if (walletAddress === publicKey.toString()) {
         setIsAuthenticated(true);
         setIsLoading(false);
       } else {
         throw "In valid";
       }
-    } else {
-      throw "In Valid";
     }
   };
 
@@ -62,8 +61,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error) {
       console.log("🚀 ~ login ~ error:", error);
       setVisible(true);
-      setIsLoading(false);
-    } finally {
       setIsLoading(false);
     }
   };
