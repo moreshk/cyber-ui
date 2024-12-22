@@ -38,7 +38,6 @@ export default function Home() {
           <div>
             <p>Create by {truncateAddress(coin.creatorWalletAddress)}</p>
             <p>{dayjs(coin.createdAt).fromNow()}</p>
-            <>{JSON.stringify(coin.createdAt)}</>
             <p>{coin.description}</p>
           </div>
         </Link>
