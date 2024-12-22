@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { Coin } from "../../type";
 import api from "@/lib/axios";
+import { Coin } from "../../type";
 
 interface TokenStore {
   data: Coin[] | null;

@@ -28,6 +28,7 @@
     "@solana/wallet-adapter-wallets": "^0.19.32",
     "@solana/web3.js": "1",
     "axios": "^1.7.9",
+    "boring-avatars": "^1.11.2",
     "bs58": "^6.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
