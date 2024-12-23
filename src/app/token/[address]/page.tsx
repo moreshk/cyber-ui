@@ -10,6 +10,7 @@ import Avatar from "boring-avatars";
 import Chart from "./components/chart";
 import { CommentInput } from "./components/commentInput";
 import WSTokenDetails from "./components/WSTokenDetails";
+import Swap from "./components/Swap";
 
 dayjs.extend(relativeTime);
 
@@ -128,7 +129,10 @@ const Page = () => {
               </div>
             </div>
           </div>
-          <Chart />
+          <div className="flex gap-2">
+            <Chart />
+            <Swap />
+          </div>
           <div>
             <CommentInput />
             {data.comments.map((comment) => (
