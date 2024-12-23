@@ -15,7 +15,7 @@ export default function Swap() {
   const [amount, setAmount] = React.useState("0.00");
   const { data } = useTokenDetailsStore();
   const { connection } = useConnection();
-  const { publicKey, sendTransaction } = useWallet();
+  const { sendTransaction } = useWallet();
 
   const handleAmountChange = (value: string) => {
     if (/^\d*\.?\d*$/.test(value)) {
