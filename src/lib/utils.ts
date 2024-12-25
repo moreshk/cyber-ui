@@ -9,3 +9,7 @@ export const truncateAddress = (address?: string) => {
   if (!address) return "";
   return `${address.slice(0, 4)}...${address.slice(-4)}`;
 };
+export const first4Characters = (address?: string) => {
+  if (!address) return "";
+  return `${address.slice(0, 4)}`;
+};

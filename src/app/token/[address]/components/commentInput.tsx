@@ -7,16 +7,19 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import api from "@/lib/axios";
+import { useAuth } from "@/providers/Auth";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export function CommentInput() {
   const [open, setOpen] = useState(false);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
   const { address } = useParams() as { address: string };
-
+  const { isAuthenticated } = useAuth();
   const saveComment = async () => {
+    if (!isAuthenticated) return toast.error("Please connect wallet");
     try {
       setLoading(true);
       await api.post("/v1/comment/add", {
