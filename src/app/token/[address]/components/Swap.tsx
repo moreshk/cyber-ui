@@ -51,11 +51,13 @@ export default function Swap() {
         tx.recentBlockhash = blockhash;
         tx.feePayer = publicKey;
         tx.sign(mint);
-
         const signedTransaction = await signTransaction(tx);
-        await connection.sendRawTransaction(signedTransaction.serialize());
+        const signature = await connection.sendRawTransaction(
+          signedTransaction.serialize()
+        );
         await api.post<{ serializedTransaction: string }>("/v1/coin/minted", {
           token: data.mintAddress,
+          tx: signature,
         });
       } catch (e: any) {
         console.log(e);
