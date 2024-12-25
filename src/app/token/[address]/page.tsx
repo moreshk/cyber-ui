@@ -5,13 +5,14 @@ import dayjs from "dayjs";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { truncateAddress } from "@/lib/utils";
+import { first4Characters, truncateAddress } from "@/lib/utils";
 import Avatar from "boring-avatars";
 import Chart from "./components/chart";
 import { CommentInput } from "./components/commentInput";
 import WSTokenDetails from "./components/WSTokenDetails";
 import Swap from "./components/Swap";
 import MintToken from "./components/MintToken";
+import { Badge } from "@/components/ui/badge";
 
 dayjs.extend(relativeTime);
 
@@ -138,9 +139,23 @@ const Page = () => {
           </div>
           <div>
             <CommentInput />
-            {data.comments.map((comment) => (
-              <div key={comment.id}>{comment.content}</div>
-            ))}
+            <div className="space-y-4 max-w-2xl pt-3">
+              {data.comments.map((comment) => (
+                <div key={comment.id} className="bg-gray-100 rounded-lg p-4">
+                  <div className="flex gap-2">
+                    <Avatar
+                      name={comment.walletAddress}
+                      height={20}
+                      width={20}
+                      variant="pixel"
+                    />
+                    <Badge>{first4Characters(comment.walletAddress)}</Badge>
+                    {dayjs(comment.createdAt).fromNow()}
+                  </div>
+                  {comment.content}
+                </div>
+              ))}
+            </div>
           </div>
           <WSTokenDetails />
         </div>
