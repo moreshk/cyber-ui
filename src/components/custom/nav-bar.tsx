@@ -8,7 +8,9 @@ const Navbar = () => {
   return (
     <div className="sticky top-0 border-b py-4 px-5 bg-white">
       <div className="mx-auto max-w-7xl flex justify-between items-center">
-        <Image src="/logo.png" alt="logo" width={50} height={50} />
+        <Link href="/">
+          <Image src="/logo.png" alt="logo" width={50} height={50} />
+        </Link>
         <div className="flex gap-2 items-center">
           <Link
             href="/create-agent"
