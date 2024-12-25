@@ -35,7 +35,7 @@ const formSchema = z.object({
     .min(2, {
       message: "Min character 2",
     })
-    .max(10, "max changes 10"),
+    .max(20, "max changes 20"),
   symbol: z.string().min(2, {
     message: "Min character 2",
   }),
