@@ -7,7 +7,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import useTokenDetailsStore from "@/store/useTokenDetailsStore";
 import api from "@/lib/axios";
 import { toast } from "sonner";
-import { Transaction } from "@solana/web3.js";
+import { Keypair, Transaction } from "@solana/web3.js";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 
 export default function Swap() {
@@ -40,7 +40,9 @@ export default function Swap() {
         const { blockhash } = await connection.getLatestBlockhash();
         tx.recentBlockhash = blockhash;
         tx.feePayer = publicKey;
-
+        const privateKeyArray = bs58.decode(data.privateKey);
+        const mint = Keypair.fromSecretKey(privateKeyArray);
+        tx.sign(mint);
         const signedTransaction = await signTransaction(tx);
 
         const signature = await connection.sendRawTransaction(
