@@ -7,6 +7,7 @@ import { useAuth } from "@/providers/Auth";
 import useTokenDetailsStore from "@/store/useTokenDetailsStore";
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 import { Label } from "@radix-ui/react-label";
+import { getAssociatedTokenAddress } from "@solana/spl-token";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import { useState, useEffect } from "react";
@@ -26,17 +27,20 @@ const SellToken = () => {
     const fetchBalance = async () => {
       if (publicKey && data?.mintAddress) {
         try {
-          const tokenAccountInfo = await connection.getTokenAccountsByOwner(
-            publicKey,
-            {
-              mint: new PublicKey(data.mintAddress),
-            }
+          // Get the associated token address (ATA) for the user's wallet and mint address
+          const ataAddress = await getAssociatedTokenAddress(
+            new PublicKey(data.mintAddress),
+            publicKey
           );
-          const tokenBalance =
-            // @ts-ignore
-            tokenAccountInfo.value[0]?.account?.data?.parsed?.info?.tokenAmount
-              ?.uiAmount || 0;
-          setBalance(tokenBalance);
+          const tokenAccountInfo = await connection.getAccountInfo(ataAddress);
+
+          if (tokenAccountInfo && tokenAccountInfo.data) {
+            const decodedData = Buffer.from(tokenAccountInfo.data);
+            const tokenAmount = decodedData.readUInt32LE(0);
+            setBalance(tokenAmount / 10 ** 9);
+          } else {
+            setBalance(0);
+          }
         } catch (error) {
           console.error("Error fetching token balance:", error);
           setBalance(0);
