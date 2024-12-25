@@ -13,7 +13,7 @@ const WSTokenDetails = () => {
   useEffect(() => {
     let heartbeat: any;
     const rws = new ReconnectingWebSocket(async () => {
-      return `ws://0.0.0.0:4000/v1/g/${address}`;
+      return `${process.env.NEXT_PUBLIC_WS_URL}/v1/g/${address}`;
     });
 
     rws.onopen = () => {
