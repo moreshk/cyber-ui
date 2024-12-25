@@ -46,9 +46,18 @@ const SellToken = () => {
         const signature = await connection.sendRawTransaction(
           signedTransaction.serialize()
         );
-        console.log("Transaction successful:", signature);
+        setLoading(false);
+        toast("Event has been created", {
+          action: {
+            label: "View on SolScan",
+            onClick: () => {
+              window.open(`https://solscan.io/tx/${signature}`, "_blank");
+            },
+          },
+        });
       }
     } catch (e: any) {
+      setLoading(false);
       toast.error(e.message);
     }
   };
