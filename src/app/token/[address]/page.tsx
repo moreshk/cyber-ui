@@ -3,7 +3,7 @@
 import useTokenDetailsStore from "@/store/useTokenDetailsStore";
 import dayjs from "dayjs";
 import { useParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { first4Characters, truncateAddress } from "@/lib/utils";
 import Avatar from "boring-avatars";
@@ -19,6 +19,7 @@ dayjs.extend(relativeTime);
 const Page = () => {
   const { address } = useParams() as { address: string };
   const { fetchTokens, data, isLoading } = useTokenDetailsStore();
+  const [showSwap, setShowSwap] = useState(false);
 
   useEffect(() => {
     fetchTokens(address);
@@ -131,10 +132,18 @@ const Page = () => {
               </div>
             </div>
           </div>
-          <div className="flex  pt-7">
+          <div className="flex pt-7">
             <Chart />
             <div className="flex-1 w-full">
-              {data.status === "pending" ? <MintToken /> : <Swap />}
+              {data.status === "pending" || showSwap ? (
+                <MintToken
+                  onDone={() => {
+                    setShowSwap(true);
+                  }}
+                />
+              ) : (
+                <Swap />
+              )}
             </div>
           </div>
           <div>
