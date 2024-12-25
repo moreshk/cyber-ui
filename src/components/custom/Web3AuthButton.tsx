@@ -48,6 +48,7 @@ const Web3AuthButton = () => {
 
   return (
     <div>
+      <button onClick={handleSignMessage}>Sign</button>
       {!isLoading && publicKey ? (
         <Button
           loading={loading}
