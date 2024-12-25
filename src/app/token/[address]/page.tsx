@@ -11,6 +11,7 @@ import Chart from "./components/chart";
 import { CommentInput } from "./components/commentInput";
 import WSTokenDetails from "./components/WSTokenDetails";
 import Swap from "./components/Swap";
+import MintToken from "./components/MintToken";
 
 dayjs.extend(relativeTime);
 
@@ -129,9 +130,11 @@ const Page = () => {
               </div>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex  pt-7">
             <Chart />
-            <Swap />
+            <div className="flex-1 w-full">
+              {data.status === "pending" ? <MintToken /> : <Swap />}
+            </div>
           </div>
           <div>
             <CommentInput />

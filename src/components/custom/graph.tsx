@@ -70,12 +70,7 @@ const CandleChartComponent: React.FC<CandleChartProps> = ({
     seriesRef.current?.setData(data);
   }, [data]);
 
-  return (
-    <div
-      ref={chartContainerRef}
-      style={{ width: "100%", height: `${height}px` }}
-    />
-  );
+  return <div ref={chartContainerRef} style={{ height: `${height}px` }} />;
 };
 
 export default CandleChartComponent;
