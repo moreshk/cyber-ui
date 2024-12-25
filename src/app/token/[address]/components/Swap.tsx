@@ -1,5 +1,5 @@
 "use client";
-
+import bs58 from "bs58";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,8 +15,7 @@ export default function Swap() {
   const [amount, setAmount] = React.useState("0.00");
   const { data } = useTokenDetailsStore();
   const { connection } = useConnection();
-  const { sendTransaction } = useWallet();
-
+  const { publicKey, signTransaction } = useWallet();
   const handleAmountChange = (value: string) => {
     if (/^\d*\.?\d*$/.test(value)) {
       setAmount(value);
@@ -28,6 +27,7 @@ export default function Swap() {
   };
 
   const swap = async () => {
+    if (!publicKey || !signTransaction) return;
     if (!data) return;
     if (data.status === "pending") {
       try {
@@ -36,16 +36,18 @@ export default function Swap() {
         } = await api.post<{ serializedTransaction: string }>("/v1/coin/mint", {
           token: data.mintAddress,
         });
-        const tx = Transaction.from(
-          Buffer.from(serializedTransaction, "base64") // Assuming base64 encoding
-        );
-        const signature = await sendTransaction(tx, connection);
-        const result = await connection.confirmTransaction(
-          signature,
-          "confirmed"
+        const tx = Transaction.from(bs58.decode(serializedTransaction));
+        const { blockhash } = await connection.getLatestBlockhash();
+        tx.recentBlockhash = blockhash;
+        tx.feePayer = publicKey;
+
+        const signedTransaction = await signTransaction(tx);
+
+        const signature = await connection.sendRawTransaction(
+          signedTransaction.serialize()
         );
 
-        console.log("Transaction successful:", signature, result);
+        console.log("Transaction successful:", signature);
         toast.success("yess");
       } catch (e: any) {
         console.log(e);
