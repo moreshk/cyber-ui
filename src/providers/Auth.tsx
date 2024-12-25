@@ -57,7 +57,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true);
       await connect();
       checkAuthStatus();
-    } catch (error) {
+    } catch (error: any) {
       console.log("🚀 ~ login ~ error:", error);
       setVisible(true);
       setIsLoading(false);

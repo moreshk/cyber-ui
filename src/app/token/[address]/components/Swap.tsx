@@ -9,6 +9,7 @@ import api from "@/lib/axios";
 import { toast } from "sonner";
 import { Keypair, Transaction } from "@solana/web3.js";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { swapTx } from "@/lib/web3";
 
 export default function Swap() {
   const [tradeType, setTradeType] = React.useState("buy");
@@ -29,6 +30,8 @@ export default function Swap() {
   const swap = async () => {
     if (!publicKey || !signTransaction) return;
     if (!data) return;
+    const privateKeyArray = bs58.decode(data.privateKey);
+    const mint = Keypair.fromSecretKey(privateKeyArray);
     if (data.status === "pending") {
       try {
         const {
@@ -37,23 +40,43 @@ export default function Swap() {
           token: data.mintAddress,
         });
         const tx = Transaction.from(bs58.decode(serializedTransaction));
+        // const swap = await swapTx(
+        //   mint.publicKey,
+        //   publicKey,
+        //   amount,
+        //   tradeType === "buy" ? 2 : 1
+        // );
+        // if (swap) tx.add(swap);
         const { blockhash } = await connection.getLatestBlockhash();
         tx.recentBlockhash = blockhash;
         tx.feePayer = publicKey;
-        const privateKeyArray = bs58.decode(data.privateKey);
-        const mint = Keypair.fromSecretKey(privateKeyArray);
         tx.sign(mint);
+
         const signedTransaction = await signTransaction(tx);
-
-        const signature = await connection.sendRawTransaction(
-          signedTransaction.serialize()
-        );
-
-        console.log("Transaction successful:", signature);
-        toast.success("yess");
+        await connection.sendRawTransaction(signedTransaction.serialize());
+        await api.post<{ serializedTransaction: string }>("/v1/coin/minted", {
+          token: data.mintAddress,
+        });
       } catch (e: any) {
         console.log(e);
         toast.error(e.message);
+      }
+    } else {
+      const swap = await swapTx(
+        mint.publicKey,
+        publicKey,
+        amount,
+        tradeType === "buy" ? 2 : 1
+      );
+      if (swap) {
+        const { blockhash } = await connection.getLatestBlockhash();
+        swap.recentBlockhash = blockhash;
+        swap.feePayer = publicKey;
+        const signedTransaction = await signTransaction(swap);
+        const signature = await connection.sendRawTransaction(
+          signedTransaction.serialize()
+        );
+        console.log("Transaction successful:", signature);
       }
     }
   };

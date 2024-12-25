@@ -36,6 +36,15 @@ const WSTokenDetails = () => {
           }
         });
       }
+      if (data.event === "token-minted") {
+        mutate((oldData: TokenDetails | null) => {
+          if (oldData) {
+            return { ...oldData, status: "success" };
+          } else {
+            return null;
+          }
+        });
+      }
     };
 
     return () => {
