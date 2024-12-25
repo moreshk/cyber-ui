@@ -51,7 +51,10 @@ const SellToken = () => {
           action: {
             label: "View on SolScan",
             onClick: () => {
-              window.open(`https://solscan.io/tx/${signature}`, "_blank");
+              window.open(
+                `https://solscan.io/tx/${signature}?cluster=devnet`,
+                "_blank"
+              );
             },
           },
         });
