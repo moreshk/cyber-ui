@@ -67,7 +67,7 @@ const formSchema = z.object({
     }),
 });
 
-export function Page() {
+function Page() {
   const [loading, setLoading] = useState(false);
   const { push } = useRouter();
   const [showMoreOptions, setShowMoreOptions] = useState(false);
