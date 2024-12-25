@@ -9,7 +9,7 @@ import { Keypair, Transaction } from "@solana/web3.js";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { useAuth } from "@/providers/Auth";
 
-export default function MintToken() {
+export default function MintToken({ onDone }: { onDone: () => void }) {
   const { data } = useTokenDetailsStore();
   const { connection } = useConnection();
   const { publicKey, signTransaction } = useWallet();
@@ -42,6 +42,7 @@ export default function MintToken() {
           token: data.mintAddress,
           tx: signature,
         });
+        onDone();
         setLoading(false);
       } catch (e: any) {
         setLoading(false);
