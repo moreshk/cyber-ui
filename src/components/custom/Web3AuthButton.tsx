@@ -11,11 +11,17 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const Web3AuthButton = () => {
-  const { signMessage, publicKey } = useWallet();
+  const { signMessage, publicKey, connect } = useWallet();
   const [loading, setLoading] = useState(false);
   const { isLoading, isAuthenticated, mutate } = useAuth();
 
   const handleSignMessage = async () => {
+    try {
+      await connect();
+    } catch (e) {
+      console.log(e);
+    }
+
     if (!signMessage || !publicKey) return;
     try {
       setLoading(true);
@@ -48,8 +54,7 @@ const Web3AuthButton = () => {
 
   return (
     <div>
-      <button onClick={handleSignMessage}>Sign</button>
-      {!isLoading && publicKey ? (
+      {publicKey ? (
         <Button
           loading={loading}
           loadingText="connecting..."
