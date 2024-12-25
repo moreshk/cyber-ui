@@ -5,9 +5,7 @@ import {
   ConnectionProvider,
   WalletProvider,
 } from "@solana/wallet-adapter-react";
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
-import { clusterApiUrl } from "@solana/web3.js";
 import "@solana/wallet-adapter-react-ui/styles.css";
 
 export default function AppWalletProvider({
@@ -15,12 +13,14 @@ export default function AppWalletProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const network = WalletAdapterNetwork.Devnet;
-  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-  const wallets = useMemo(() => [], [network]);
+  const wallets = useMemo(() => [], []);
 
   return (
-    <ConnectionProvider endpoint={endpoint}>
+    <ConnectionProvider
+      endpoint={
+        "https://omniscient-spring-surf.solana-devnet.quiknode.pro/aa4fd5250ec7587a58184760c81b7c86b2f6190b/"
+      }
+    >
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>{children}</WalletModalProvider>
       </WalletProvider>
