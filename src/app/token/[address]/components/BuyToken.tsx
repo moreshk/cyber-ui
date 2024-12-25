@@ -8,16 +8,27 @@ import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 import { Label } from "@radix-ui/react-label";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Keypair } from "@solana/web3.js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const BuyToken = () => {
   const [amount, setAmount] = useState("0.00");
+  const [balance, setBalance] = useState(0);
   const { data } = useTokenDetailsStore();
   const { connection } = useConnection();
   const { publicKey, signTransaction } = useWallet();
   const [loading, setLoading] = useState(false);
   const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (publicKey) {
+        const lamports = await connection.getBalance(publicKey);
+        setBalance(lamports / 1e9); // Convert lamports to SOL
+      }
+    };
+    fetchBalance();
+  }, [publicKey, connection]);
 
   const handleAmountChange = (value: string) => {
     if (/^\d*\.?\d*$/.test(value)) {
@@ -46,10 +57,15 @@ const BuyToken = () => {
         const signature = await connection.sendRawTransaction(
           signedTransaction.serialize()
         );
-        console.log("Transaction successful:", signature);
         setLoading(false);
         toast("Event has been created", {
           action: {
+            actionButtonStyle: {
+              background: "black",
+              color: "white",
+              borderRadius: "10px",
+              padding: "4px",
+            },
             label: "View on SolScan",
             onClick: () => {
               window.open(
@@ -71,7 +87,12 @@ const BuyToken = () => {
       <Card>
         <CardContent className="space-y-2 pt-3">
           <div className="space-y-1">
-            <Label htmlFor="username">Amount in (SOL)</Label>
+            <div>
+              <Label htmlFor="username">Amount in (SOL)</Label>
+              <p className="text-sm text-gray-500">
+                Available Balance: {balance.toFixed(2) || "-"} (Sol)
+              </p>
+            </div>
             <Input
               value={amount}
               onChange={(e) => {

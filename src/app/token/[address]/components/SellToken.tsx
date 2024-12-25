@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,17 +8,43 @@ import useTokenDetailsStore from "@/store/useTokenDetailsStore";
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 import { Label } from "@radix-ui/react-label";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { Keypair } from "@solana/web3.js";
-import { useState } from "react";
+import { Keypair, PublicKey } from "@solana/web3.js";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 const SellToken = () => {
   const [amount, setAmount] = useState("0.00");
+  const [balance, setBalance] = useState(0);
   const { data } = useTokenDetailsStore();
   const { connection } = useConnection();
   const { publicKey, signTransaction } = useWallet();
   const [loading, setLoading] = useState(false);
   const { isAuthenticated } = useAuth();
+
+  // Fetch balance from the blockchain
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (publicKey && data?.mintAddress) {
+        try {
+          const tokenAccountInfo = await connection.getTokenAccountsByOwner(
+            publicKey,
+            {
+              mint: new PublicKey(data.mintAddress),
+            }
+          );
+          const tokenBalance =
+            // @ts-ignore
+            tokenAccountInfo.value[0]?.account?.data?.parsed?.info?.tokenAmount
+              ?.uiAmount || 0;
+          setBalance(tokenBalance);
+        } catch (error) {
+          console.error("Error fetching token balance:", error);
+          setBalance(0);
+        }
+      }
+    };
+    fetchBalance();
+  }, [publicKey, data?.mintAddress, connection]);
 
   const handleAmountChange = (value: string) => {
     if (/^\d*\.?\d*$/.test(value)) {
@@ -25,8 +52,11 @@ const SellToken = () => {
     }
   };
 
-  const handleQuickAmount = (value: string) => {
-    setAmount(value);
+  const handleQuickAmount = (percentage: number) => {
+    if (balance > 0) {
+      const calculatedAmount = ((balance * percentage) / 100).toFixed(2);
+      setAmount(calculatedAmount);
+    }
   };
 
   const swap = async () => {
@@ -47,7 +77,7 @@ const SellToken = () => {
           signedTransaction.serialize()
         );
         setLoading(false);
-        toast("Event has been created", {
+        toast("Transaction successful", {
           action: {
             label: "View on SolScan",
             onClick: () => {
@@ -70,7 +100,12 @@ const SellToken = () => {
       <Card>
         <CardContent className="space-y-2 pt-3">
           <div className="space-y-1">
-            <Label htmlFor="username">Amount in ({data?.name})</Label>
+            <div className="flex justify-between items-center">
+              <Label htmlFor="amount">Amount in ({data?.name})</Label>
+              <p className="text-sm text-gray-500">
+                Available Balance: {balance.toFixed(2) || "-"} {data?.name}
+              </p>
+            </div>
             <Input
               value={amount}
               onChange={(e) => {
@@ -85,26 +120,26 @@ const SellToken = () => {
               variant="outline"
               onClick={() => handleAmountChange("")}
             >
-              reset
+              Reset
             </Button>
             <Button
               size="sm"
               variant="outline"
-              onClick={() => handleQuickAmount("0.1")}
+              onClick={() => handleQuickAmount(25)}
             >
               25%
             </Button>
             <Button
               size="sm"
               variant="outline"
-              onClick={() => handleQuickAmount("0.5")}
+              onClick={() => handleQuickAmount(50)}
             >
               50%
             </Button>
             <Button
               size="sm"
               variant="outline"
-              onClick={() => handleQuickAmount("1")}
+              onClick={() => handleQuickAmount(100)}
             >
               100%
             </Button>
@@ -112,7 +147,7 @@ const SellToken = () => {
         </CardContent>
         <CardFooter>
           <Button onClick={swap} loading={loading} className="w-full" size="lg">
-            Please Trade
+            Swap Tokens
           </Button>
         </CardFooter>
       </Card>
