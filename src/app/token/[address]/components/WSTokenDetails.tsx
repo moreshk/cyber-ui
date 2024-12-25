@@ -30,7 +30,7 @@ const WSTokenDetails = () => {
       if (data.event === "comment") {
         mutate((oldData: TokenDetails | null) => {
           if (oldData) {
-            return { ...oldData, comments: [data.value, ...oldData.comments] };
+            return { ...oldData, comments: [...oldData.comments, data.value] };
           } else {
             return null;
           }
