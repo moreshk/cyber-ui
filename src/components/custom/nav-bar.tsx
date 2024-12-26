@@ -20,6 +20,14 @@ const Navbar = () => {
           >
             Create Agent
           </Link>
+          <Link
+            href="/my-agents"
+            className={buttonVariants({
+              variant: "link",
+            })}
+          >
+            My Agents
+          </Link>
           <Web3AuthButton />
         </div>
       </div>
