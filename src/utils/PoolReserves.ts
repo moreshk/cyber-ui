@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { PublicKey, Keypair } from "@solana/web3.js";
-import { connection } from "./connection";
+import { PublicKey } from "@solana/web3.js";
 
 const PROGRAM_ID = new PublicKey(
   "47LT6fpnsf9w8crd5VagS8Tc4QDUWEzptDqDFpNG9Mem"
