@@ -43,3 +43,13 @@ export interface Comment {
   createdAt: Date;
   deletedAt: null;
 }
+
+export interface Owner {
+  walletAddress: string;
+  username: string;
+  role: string;
+  lastLogin: string;
+  updatedAt: null;
+  createdAt: string;
+  deletedAt: null;
+}
