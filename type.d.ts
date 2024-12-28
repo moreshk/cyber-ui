@@ -32,6 +32,9 @@ export interface Agents {
   updatedAt: null;
   createdAt: string;
   deletedAt: null;
+  telegramName?: string;
+  telegramToken?: string;
+  agentId?: string;
 }
 
 export interface Comment {

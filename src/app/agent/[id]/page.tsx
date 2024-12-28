@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Edit,
   MessageSquare,
@@ -10,25 +10,34 @@ import {
   FlaskConical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import useSWR from "swr";
 import { useParams } from "next/navigation";
-import { Agents, Coin, Owner } from "../../../../type";
+import Discord from "./Component/Discord";
+import Sandbox from "./Component/Sandbox";
+import Telegram from "./Component/Telegram";
+import EditForm from "./Component/EditForm";
+import useAgentDetailsStore from "@/store/useAgentDetailsStore";
 
 const Page = () => {
   const params = useParams<{ id: string }>();
-  const { data, isLoading } = useSWR<Agents & { coin: Coin; owner: Owner }>(
-    `/v1/agent/details?token=${params.id}`
-  );
+  const { data, isLoading, fetchAgents } = useAgentDetailsStore();
+  const [selectedTab, setSelectedTab] = useState<
+    "telegram" | "discord" | "twitter" | "sandbox" | "edit" | ""
+  >("");
+
+  useEffect(() => {
+    fetchAgents(params.id);
+  }, []);
 
   if (isLoading || !data) {
     return <div>Loading</div>;
   }
+
   return (
     <div className="min-h-screen p-6 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-semibold">i</h1>
-          <Button variant="ghost">
+          <Button variant="ghost" onClick={() => setSelectedTab("edit")}>
             <Edit className="w-4 h-4" />
             Edit
           </Button>
@@ -53,15 +62,27 @@ const Page = () => {
         </div>
       </div>
       <div className="flex flex-wrap gap-3 mb-6">
-        <Button variant="outline" className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          className="flex items-center gap-2"
+          onClick={() => setSelectedTab("telegram")}
+        >
           <MessageSquare className="w-4 h-4" />
           Telegram
         </Button>
-        <Button variant="outline" className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          className="flex items-center gap-2"
+          onClick={() => setSelectedTab("discord")}
+        >
           <MessageSquare className="w-4 h-4" />
           Discord
         </Button>
-        <Button variant="outline" className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          className="flex items-center gap-2"
+          onClick={() => setSelectedTab("twitter")}
+        >
           <Share2 className="w-4 h-4" />
           Twitter
         </Button>
@@ -73,7 +94,11 @@ const Page = () => {
           <Code className="w-4 h-4" />
           API
         </Button>
-        <Button variant="outline" className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          className="flex items-center gap-2"
+          onClick={() => setSelectedTab("sandbox")}
+        >
           <FlaskConical className="w-4 h-4" />
           Sandbox
         </Button>
@@ -82,33 +107,43 @@ const Page = () => {
         You have successfully created your agent! Link TG bot to start talking &
         training your agent.
       </div>
-      <div className="space-y-6">
-        <div>
-          <h2 className="text-lg font-semibold mb-2">Description</h2>
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
-            <p>{data.description}</p>
+      {selectedTab == "telegram" ? (
+        <Telegram />
+      ) : selectedTab == "discord" ? (
+        <Discord />
+      ) : selectedTab == "sandbox" ? (
+        <Sandbox />
+      ) : selectedTab == "edit" ? (
+        <EditForm />
+      ) : (
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-lg font-semibold mb-2">Description</h2>
+            <div className="bg-white p-4 rounded-lg border border-gray-200">
+              <p>{data.description}</p>
+            </div>
           </div>
-        </div>
 
-        <div>
-          <h2 className="text-lg font-semibold mb-2">Personality</h2>
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
-            <p>{data.personality}</p>
+          <div>
+            <h2 className="text-lg font-semibold mb-2">Personality</h2>
+            <div className="bg-white p-4 rounded-lg border border-gray-200">
+              <p>{data.personality}</p>
+            </div>
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold mb-2">Instruction</h2>
+            <div className="bg-white p-4 rounded-lg border border-gray-200">
+              <p>{data.instruction}</p>
+            </div>
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold mb-2">Knowledge Base</h2>
+            <div className="bg-white p-4 rounded-lg border border-gray-200 min-h-[100px]">
+              {data.knowledge}
+            </div>
           </div>
         </div>
-        <div>
-          <h2 className="text-lg font-semibold mb-2">Instruction</h2>
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
-            <p>{data.instruction}</p>
-          </div>
-        </div>
-        <div>
-          <h2 className="text-lg font-semibold mb-2">Knowledge Base</h2>
-          <div className="bg-white p-4 rounded-lg border border-gray-200 min-h-[100px]">
-            {data.knowledge}
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 };
