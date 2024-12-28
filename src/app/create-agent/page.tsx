@@ -270,7 +270,7 @@ Should they make things up?`}
               </button>
               <div
                 className={
-                  showMoreOptions ? "hidden space-y-2" : "block space-y-2"
+                  showMoreOptions ? "block space-y-2" : "hidden space-y-2"
                 }
               >
                 <FormField
