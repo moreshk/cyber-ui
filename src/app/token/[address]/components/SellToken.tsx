@@ -5,9 +5,9 @@ import { Input } from "@/components/ui/input";
 import { swapTx } from "@/lib/web3";
 import { useAuth } from "@/providers/Auth";
 import useTokenDetailsStore from "@/store/useTokenDetailsStore";
+import { splTokenBalance } from "@/utils/splTokenBalance";
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 import { Label } from "@radix-ui/react-label";
-import { getAssociatedTokenAddress } from "@solana/spl-token";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import { useState, useEffect } from "react";
@@ -22,25 +22,16 @@ const SellToken = () => {
   const [loading, setLoading] = useState(false);
   const { isAuthenticated } = useAuth();
 
-  // Fetch balance from the blockchain
   useEffect(() => {
     const fetchBalance = async () => {
       if (publicKey && data?.mintAddress) {
         try {
-          // Get the associated token address (ATA) for the user's wallet and mint address
-          const ataAddress = await getAssociatedTokenAddress(
-            new PublicKey(data.mintAddress),
-            publicKey
+          const { balance } = await splTokenBalance(
+            connection,
+            publicKey,
+            new PublicKey(data.mintAddress)
           );
-          const tokenAccountInfo = await connection.getAccountInfo(ataAddress);
-
-          if (tokenAccountInfo && tokenAccountInfo.data) {
-            const decodedData = Buffer.from(tokenAccountInfo.data);
-            const tokenAmount = decodedData.readUInt32LE(0);
-            setBalance(tokenAmount / 10 ** 9);
-          } else {
-            setBalance(0);
-          }
+          setBalance(balance / 10 ** 9);
         } catch (error) {
           console.error("Error fetching token balance:", error);
           setBalance(0);
@@ -107,7 +98,7 @@ const SellToken = () => {
             <div className="flex justify-between items-center">
               <Label htmlFor="amount">Amount in ({data?.name})</Label>
               <p className="text-sm text-gray-500">
-                Available Balance: {balance.toFixed(2) || "-"} {data?.name}
+                {balance.toFixed(2) || "-"} {data?.name}
               </p>
             </div>
             <Input
