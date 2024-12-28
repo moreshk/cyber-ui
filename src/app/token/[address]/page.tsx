@@ -44,7 +44,7 @@ const Page = () => {
               <div className="flex gap-4 flex-col w-full">
                 <div className="flex items-center gap-2">
                   <p className="text-xl font-semibold">{data.name}</p>
-                  {data.agent.twitterUrl && (
+                  {data?.agent?.twitterUrl && (
                     <a target="_blank" href={data.agent.telegramUrl}>
                       <svg
                         width={24}
@@ -60,7 +60,7 @@ const Page = () => {
                       </svg>
                     </a>
                   )}
-                  {data.agent.telegramUrl && (
+                  {data?.agent?.telegramUrl && (
                     <a target="_blank" href={data.agent.telegramUrl}>
                       <svg
                         width={24}
