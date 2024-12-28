@@ -21,6 +21,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import useAgentDetailsStore from "@/store/useAgentDetailsStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleHelp } from "lucide-react";
 import React, { useState } from "react";
@@ -31,6 +32,7 @@ import { z } from "zod";
 const EditForm = () => {
   const [selectedMode, setSelectedMode] = useState("Neutral");
   const [loading, setLoading] = useState(false);
+  const { data } = useAgentDetailsStore();
 
   const modes = [
     {
@@ -64,15 +66,19 @@ const EditForm = () => {
     instruction: z.string().min(2, {
       message: "Min character 2",
     }),
+    knowledge: z.string().min(2, {
+      message: "Min character 2",
+    }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      personality: "",
-      instruction: "",
+      name: data?.name || "",
+      description: data?.description || "",
+      personality: data?.personality || "",
+      instruction: data?.instruction || "",
+      knowledge: data?.knowledge || "",
     },
   });
 
@@ -91,7 +97,7 @@ const EditForm = () => {
 
   console.log("loading", loading);
   return (
-    <div className="p-6 rounded-xl shadow w-full bg-gradient-to-b from-gray-300 to-white">
+    <div className="p-6 rounded-xl shadow w-full bg-gradient-to-b">
       <div className="flex items-center justify-end p-4 rounded-lg">
         {modes.map((mode) => (
           <label
@@ -111,15 +117,13 @@ const EditForm = () => {
             <div
               className={`w-4 h-4 rounded-full border-4 ${
                 selectedMode === mode.value
-                  ? "border-gray-300 bg-purple-600"
+                  ? "border-gray-300 bg-gray-600"
                   : "border-gray-300"
               }`}
             />
             <span
               className={`text-sm font-medium ${
-                selectedMode === mode.value
-                  ? "text-purple-600"
-                  : "text-gray-700"
+                selectedMode === mode.value ? "text-gray-600" : "text-gray-700"
               }`}
             >
               {mode.label}
@@ -165,7 +169,7 @@ const EditForm = () => {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="description" {...field} />
+                    <Textarea placeholder="description" {...field} rows={4} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -178,7 +182,7 @@ const EditForm = () => {
                 <FormItem>
                   <FormLabel>Personality</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="personality" {...field} />
+                    <Textarea placeholder="personality" {...field} rows={4} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -195,6 +199,7 @@ const EditForm = () => {
                       className=""
                       placeholder="instruction"
                       {...field}
+                      rows={4}
                     />
                   </FormControl>
                   <FormMessage />
@@ -205,15 +210,17 @@ const EditForm = () => {
               <AccordionItem value="showMore">
                 <AccordionTrigger>Show more options</AccordionTrigger>
                 <AccordionContent>
+                  <FormLabel>Knowledge</FormLabel>
                   <FormField
                     control={form.control}
-                    name="instruction"
+                    name="knowledge"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
                           <Textarea
                             placeholder="Project information, Twitter text, article text, whitepaper text..."
                             {...field}
+                            rows={4}
                           />
                         </FormControl>
                         <FormMessage />
