@@ -45,6 +45,22 @@ const WSTokenDetails = () => {
           }
         });
       }
+      if (data.event === "agent-credits") {
+        mutate((oldData: TokenDetails | null) => {
+          if (oldData) {
+            return {
+              ...oldData,
+              agent: {
+                ...oldData.agent,
+                points: data.value.points,
+                usedPoints: data.value.usedPoints,
+              },
+            };
+          } else {
+            return null;
+          }
+        });
+      }
     };
 
     return () => {

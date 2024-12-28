@@ -16,6 +16,7 @@ import Sandbox from "./Component/Sandbox";
 import Telegram from "./Component/Telegram";
 import EditForm from "./Component/EditForm";
 import useAgentDetailsStore from "@/store/useAgentDetailsStore";
+import WSAgentDetails from "@/app/token/[address]/components/WSAgentDetails";
 
 const Page = () => {
   const params = useParams<{ id: string }>();
@@ -144,6 +145,7 @@ const Page = () => {
           </div>
         </div>
       )}
+      <WSAgentDetails />
     </div>
   );
 };

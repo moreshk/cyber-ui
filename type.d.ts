@@ -35,6 +35,7 @@ export interface Agents {
   telegramName?: string;
   telegramToken?: string;
   agentId?: string;
+  usedPoints: string;
 }
 
 export interface Comment {
