@@ -15,6 +15,7 @@ import Telegram from "./Component/Telegram";
 import EditForm from "./Component/EditForm";
 import useAgentDetailsStore from "@/store/useAgentDetailsStore";
 import WSAgentDetails from "@/app/token/[address]/components/WSAgentDetails";
+import Buy from "./Component/Buy";
 
 const Page = () => {
   const params = useParams<{ id: string }>();
@@ -72,7 +73,14 @@ const Page = () => {
               </Button>
             </div>
           </div>
-          <Button className="text-white">Top Up</Button>
+          <Button
+            className="text-white"
+            onClick={() =>
+              router.push(pathname + "?" + createQueryString("type", "buy"))
+            }
+          >
+            Top Up
+          </Button>
         </div>
       </div>
       <div className="flex flex-wrap gap-3 mb-6">
@@ -115,6 +123,8 @@ const Page = () => {
         <Telegram />
       ) : type == "discord" ? (
         <Discord />
+      ) : type == "buy" ? (
+        <Buy />
       ) : type == "sandbox" ? (
         <Sandbox />
       ) : type == "edit" ? (
