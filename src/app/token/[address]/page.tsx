@@ -8,10 +8,11 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { first4Characters, truncateAddress } from "@/lib/utils";
 import Avatar from "boring-avatars";
 import Chart from "./components/chart";
-import { CommentInput } from "./components/commentInput";
 import WSTokenDetails from "./components/WSTokenDetails";
 import Swap from "./components/Swap";
 import { Badge } from "@/components/ui/badge";
+import { FaTelegram } from "react-icons/fa";
+import { buttonVariants } from "@/components/ui/button";
 
 dayjs.extend(relativeTime);
 
@@ -139,7 +140,17 @@ const Page = () => {
             </div>
           </div>
           <div>
-            <CommentInput />
+            <div className="flex gap-2 items-center">
+              {!data?.agent.telegramName && (
+                <a
+                  href={`https:t.me/${data?.agent.telegramName}`}
+                  className={buttonVariants({})}
+                >
+                  Telegram {data?.agent.telegramName}
+                  <FaTelegram />
+                </a>
+              )}
+            </div>
             <div className="space-y-4 max-w-2xl pt-3">
               {data.comments.map((comment) => (
                 <div key={comment.id} className="bg-gray-100 rounded-lg p-4">
