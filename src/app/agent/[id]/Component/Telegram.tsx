@@ -35,7 +35,7 @@ const Telegram = () => {
         </p>
         {data?.telegramName && (
           <a
-            href={`https:t.me/${data?.telegramName}`}
+            href={`https://t.me/${data?.telegramName}`}
             target="_blank"
             className=""
           >
