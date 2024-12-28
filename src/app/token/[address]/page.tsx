@@ -2,8 +2,13 @@
 
 import useTokenDetailsStore from "@/store/useTokenDetailsStore";
 import dayjs from "dayjs";
-import { useParams } from "next/navigation";
-import { useEffect } from "react";
+import {
+  useRouter,
+  useParams,
+  usePathname,
+  useSearchParams,
+} from "next/navigation";
+import { useCallback, useEffect } from "react";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { first4Characters, truncateAddress } from "@/lib/utils";
 import Avatar from "boring-avatars";
@@ -16,12 +21,26 @@ import { buttonVariants } from "@/components/ui/button";
 import { CommentInput } from "./components/commentInput";
 import ExistingHolders from "./components/ExistingHolders";
 import BondingCurveProgress from "./components/BondingCurveProgress";
+import BuyCredits from "./components/BuyCredits";
 
 dayjs.extend(relativeTime);
 
 const Page = () => {
   const { address } = useParams() as { address: string };
   const { fetchTokens, data, isLoading } = useTokenDetailsStore();
+  const searchParams = useSearchParams();
+  const type = searchParams.get("type");
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
+      return params.toString();
+    },
+    [searchParams]
+  );
 
   useEffect(() => {
     fetchTokens(address);
@@ -126,7 +145,13 @@ const Page = () => {
                       </div>
                       <button
                         className="text-sm font-bold bg-[#8066BD] py-1 px-2 rounded-3xl"
-                        onClick={() => {}}
+                        onClick={() =>
+                          router.push(
+                            pathname +
+                              "?" +
+                              createQueryString("type", "buy-credits")
+                          )
+                        }
                       >
                         Top Up
                       </button>
@@ -137,46 +162,55 @@ const Page = () => {
             </div>
           </div>
           <div className="flex pt-7">
-            <Chart />
+            <div>
+              <Chart />
+              <div>
+                <div className="flex gap-2 items-center">
+                  <CommentInput />
+                  {data?.agent?.telegramName && (
+                    <a
+                      href={`https://t.me/${data?.agent.telegramName}`}
+                      className={buttonVariants({})}
+                    >
+                      Telegram {data?.agent.telegramName}
+                      <FaTelegram />
+                    </a>
+                  )}
+                </div>
+                <div className="space-y-4 max-w-2xl pt-3">
+                  {data.comments.map((comment) => (
+                    <div
+                      key={comment.id}
+                      className="bg-gray-100 rounded-lg p-4"
+                    >
+                      <div className="flex gap-2">
+                        <Avatar
+                          name={comment.walletAddress}
+                          height={20}
+                          width={20}
+                          variant="pixel"
+                        />
+                        <Badge>{first4Characters(comment.walletAddress)}</Badge>
+                        {dayjs(comment.createdAt).fromNow()}
+                      </div>
+                      {comment.content}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
             <div className="flex-1 w-full">
               <Swap />
               <BondingCurveProgress />
               <ExistingHolders />
             </div>
           </div>
-          <div>
-            <div className="flex gap-2 items-center">
-              <CommentInput />
-              {data?.agent?.telegramName && (
-                <a
-                  href={`https://t.me/${data?.agent.telegramName}`}
-                  className={buttonVariants({})}
-                >
-                  Telegram {data?.agent.telegramName}
-                  <FaTelegram />
-                </a>
-              )}
-            </div>
-            <div className="space-y-4 max-w-2xl pt-3">
-              {data.comments.map((comment) => (
-                <div key={comment.id} className="bg-gray-100 rounded-lg p-4">
-                  <div className="flex gap-2">
-                    <Avatar
-                      name={comment.walletAddress}
-                      height={20}
-                      width={20}
-                      variant="pixel"
-                    />
-                    <Badge>{first4Characters(comment.walletAddress)}</Badge>
-                    {dayjs(comment.createdAt).fromNow()}
-                  </div>
-                  {comment.content}
-                </div>
-              ))}
-            </div>
-          </div>
-          <WSTokenDetails />
         </div>
+        <BuyCredits
+          open={type === "buy-credits"}
+          onBack={() => router.push(pathname)}
+        />
+        <WSTokenDetails />
       </div>
     );
   }
