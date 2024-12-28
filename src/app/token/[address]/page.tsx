@@ -15,6 +15,7 @@ import { FaTelegram } from "react-icons/fa";
 import { buttonVariants } from "@/components/ui/button";
 import { CommentInput } from "./components/commentInput";
 import ExistingHolders from "./components/ExistingHolders";
+import BondingCurveProgress from "./components/BondingCurveProgress";
 
 dayjs.extend(relativeTime);
 
@@ -139,6 +140,7 @@ const Page = () => {
             <Chart />
             <div className="flex-1 w-full">
               <Swap />
+              <BondingCurveProgress />
               <ExistingHolders />
             </div>
           </div>
