@@ -70,6 +70,7 @@ const BuyToken = () => {
           tx: signature,
         });
         setLoading(false);
+        toast.error("Congratulations you are the first person to buy");
       } catch (e: any) {
         setLoading(false);
         toast.error(e.message);
