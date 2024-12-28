@@ -6,7 +6,7 @@ import SellToken from "./SellToken";
 
 export default function Swap() {
   return (
-    <Tabs defaultValue="buy" className="w-[400px]">
+    <Tabs defaultValue="buy" className="w-full">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="buy">Buy</TabsTrigger>
         <TabsTrigger value="sell">Sell</TabsTrigger>
