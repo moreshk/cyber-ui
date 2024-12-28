@@ -1,7 +1,27 @@
+import api from "@/lib/axios";
+import useTokenDetailsStore from "@/store/useTokenDetailsStore";
 import { Crown } from "lucide-react";
 import { Line } from "rc-progress";
+import { useEffect } from "react";
 
 const BondingCurveProgress = () => {
+  const { data } = useTokenDetailsStore();
+
+  // const getReservers = async () => {
+  //   try {
+  //     const { data: response } = await api.get(
+  //       `/v1/token/reserves?token=${data?.mintAddress}`
+  //     );
+  //     console.log("🚀 ~ getReservers ~ data:", response);
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   getReservers();
+  // }, []);
+
   return (
     <div className="space-y-6 pt-4">
       <div className="space-y-2">
@@ -12,10 +32,10 @@ const BondingCurveProgress = () => {
           </button>
         </div>
         <Line
-          percent={10}
-          strokeWidth={5}
+          percent={8}
+          strokeWidth={4}
           strokeColor="#8066BD"
-          trailWidth={5}
+          trailWidth={4}
         />
         <p className="text-gray-400 mt-2">
           graduate this coin to raydium at $77,628 market cap.
@@ -31,10 +51,10 @@ const BondingCurveProgress = () => {
           </button>
         </div>
         <Line
-          percent={10}
-          strokeWidth={5}
+          percent={8}
+          strokeWidth={4}
           strokeColor="#F9BF85"
-          trailWidth={5}
+          trailWidth={4}
         />
         <div className="flex items-center gap-2 text-yellow-500 mt-2">
           <Crown size={20} />
