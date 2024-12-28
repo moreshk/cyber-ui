@@ -8,12 +8,12 @@ import useAgentDetailsStore, {
 
 const WSAgentDetails = () => {
   const { mutate } = useAgentDetailsStore();
-  const { address } = useParams() as { address: string };
+  const params = useParams<{ id: string }>();
 
   useEffect(() => {
     let heartbeat: any;
     const rws = new ReconnectingWebSocket(async () => {
-      return `${process.env.NEXT_PUBLIC_WS_URL}/v1/a/${address}`;
+      return `${process.env.NEXT_PUBLIC_WS_URL}/v1/g/${params.id}`;
     });
 
     rws.onopen = () => {
