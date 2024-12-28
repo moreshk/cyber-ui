@@ -101,7 +101,9 @@ const Page = () => {
                       </div>
                       <div className=" gap-2 text-right">
                         <p>Credits Consumed</p>
-                        <p className="text-xl font-bold">{10}</p>
+                        <p className="text-xl font-bold">
+                          {data.agent.usedPoints}
+                        </p>
                       </div>
                       <div className=" gap-2 text-right">
                         <p>Credits Remaining</p>
