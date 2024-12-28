@@ -45,29 +45,36 @@ const BuyToken = () => {
     if (!isAuthenticated) return toast.error("Please connect wallet");
     if (!publicKey || !signTransaction) return;
     if (!data) return;
-
     if (data.status === "pending") {
-      const privateKeyArray = bs58.decode(data.privateKey);
-      const mint = Keypair.fromSecretKey(privateKeyArray);
-      const {
-        data: { serializedTransaction },
-      } = await api.post<{ serializedTransaction: string }>("/v1/coin/mint", {
-        token: data.mintAddress,
-      });
-      const tx = Transaction.from(bs58.decode(serializedTransaction));
-      const { blockhash } = await connection.getLatestBlockhash();
-      tx.recentBlockhash = blockhash;
-      tx.feePayer = publicKey;
-      tx.sign(mint);
-      const signedTransaction = await signTransaction(tx);
-      const signature = await connection.sendRawTransaction(
-        signedTransaction.serialize()
-      );
-      await api.post<{ serializedTransaction: string }>("/v1/coin/minted", {
-        token: data.mintAddress,
-        tx: signature,
-      });
-    } else
+      try {
+        setLoading(true);
+        const privateKeyArray = bs58.decode(data.privateKey);
+        const mint = Keypair.fromSecretKey(privateKeyArray);
+        const {
+          data: { serializedTransaction },
+        } = await api.post<{ serializedTransaction: string }>("/v1/coin/mint", {
+          token: data.mintAddress,
+          amount: amount,
+        });
+        const tx = Transaction.from(bs58.decode(serializedTransaction));
+        const { blockhash } = await connection.getLatestBlockhash();
+        tx.recentBlockhash = blockhash;
+        tx.feePayer = publicKey;
+        tx.sign(mint);
+        const signedTransaction = await signTransaction(tx);
+        const signature = await connection.sendRawTransaction(
+          signedTransaction.serialize()
+        );
+        await api.post<{ serializedTransaction: string }>("/v1/coin/minted", {
+          token: data.mintAddress,
+          tx: signature,
+        });
+        setLoading(false);
+      } catch (e: any) {
+        toast.error(e.message);
+        console.log(e);
+      }
+    } else {
       try {
         setLoading(true);
         const privateKeyArray = bs58.decode(data.privateKey);
@@ -104,6 +111,7 @@ const BuyToken = () => {
         toast.error(e.message);
         setLoading(false);
       }
+    }
   };
 
   return (
