@@ -48,6 +48,7 @@ const HolderDistribution = () => {
     const percentage = (BigInt(amount) * BigInt(10000)) / total;
     return (Number(percentage) / 100).toFixed(2);
   };
+  if (!holders.length) return;
 
   return (
     <div className="pt-4 rounded-lg max-w-xl">
