@@ -141,9 +141,9 @@ const Page = () => {
           </div>
           <div>
             <div className="flex gap-2 items-center">
-              {data?.agent.telegramName && (
+              {data?.agent?.telegramName && (
                 <a
-                  href={`https:t.me/${data?.agent.telegramName}`}
+                  href={`https://t.me/${data?.agent.telegramName}`}
                   className={buttonVariants({})}
                 >
                   Telegram {data?.agent.telegramName}
