@@ -1,13 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import api from "@/lib/axios";
 import { swapTx } from "@/lib/web3";
 import { useAuth } from "@/providers/Auth";
 import useTokenDetailsStore from "@/store/useTokenDetailsStore";
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 import { Label } from "@radix-ui/react-label";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { Keypair } from "@solana/web3.js";
+import { Keypair, Transaction } from "@solana/web3.js";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -44,42 +45,65 @@ const BuyToken = () => {
     if (!isAuthenticated) return toast.error("Please connect wallet");
     if (!publicKey || !signTransaction) return;
     if (!data) return;
-    try {
-      setLoading(true);
+
+    if (data.status === "pending") {
       const privateKeyArray = bs58.decode(data.privateKey);
       const mint = Keypair.fromSecretKey(privateKeyArray);
-      const swap = await swapTx(mint.publicKey, publicKey, amount, 2);
-      if (swap) {
-        const { blockhash } = await connection.getLatestBlockhash();
-        swap.recentBlockhash = blockhash;
-        swap.feePayer = publicKey;
-        const signedTransaction = await signTransaction(swap);
-        const signature = await connection.sendRawTransaction(
-          signedTransaction.serialize()
-        );
+      const {
+        data: { serializedTransaction },
+      } = await api.post<{ serializedTransaction: string }>("/v1/coin/mint", {
+        token: data.mintAddress,
+      });
+      const tx = Transaction.from(bs58.decode(serializedTransaction));
+      const { blockhash } = await connection.getLatestBlockhash();
+      tx.recentBlockhash = blockhash;
+      tx.feePayer = publicKey;
+      tx.sign(mint);
+      const signedTransaction = await signTransaction(tx);
+      const signature = await connection.sendRawTransaction(
+        signedTransaction.serialize()
+      );
+      await api.post<{ serializedTransaction: string }>("/v1/coin/minted", {
+        token: data.mintAddress,
+        tx: signature,
+      });
+    } else
+      try {
+        setLoading(true);
+        const privateKeyArray = bs58.decode(data.privateKey);
+        const mint = Keypair.fromSecretKey(privateKeyArray);
+        const swap = await swapTx(mint.publicKey, publicKey, amount, 2);
+        if (swap) {
+          const { blockhash } = await connection.getLatestBlockhash();
+          swap.recentBlockhash = blockhash;
+          swap.feePayer = publicKey;
+          const signedTransaction = await signTransaction(swap);
+          const signature = await connection.sendRawTransaction(
+            signedTransaction.serialize()
+          );
+          setLoading(false);
+          toast("Event has been created", {
+            action: {
+              actionButtonStyle: {
+                background: "black",
+                color: "white",
+                borderRadius: "10px",
+                padding: "4px",
+              },
+              label: "View on SolScan",
+              onClick: () => {
+                window.open(
+                  `https://solscan.io/tx/${signature}?cluster=devnet`,
+                  "_blank"
+                );
+              },
+            },
+          });
+        }
+      } catch (e: any) {
+        toast.error(e.message);
         setLoading(false);
-        toast("Event has been created", {
-          action: {
-            actionButtonStyle: {
-              background: "black",
-              color: "white",
-              borderRadius: "10px",
-              padding: "4px",
-            },
-            label: "View on SolScan",
-            onClick: () => {
-              window.open(
-                `https://solscan.io/tx/${signature}?cluster=devnet`,
-                "_blank"
-              );
-            },
-          },
-        });
       }
-    } catch (e: any) {
-      toast.error(e.message);
-      setLoading(false);
-    }
   };
 
   return (
