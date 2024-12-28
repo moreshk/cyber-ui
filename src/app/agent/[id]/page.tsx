@@ -1,16 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import {
-  Edit,
-  MessageSquare,
-  Share2,
-  Code,
-  AlertCircle,
-  FlaskConical,
-} from "lucide-react";
+import React, { useCallback, useEffect } from "react";
+import { Edit, MessageSquare, FlaskConical } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import Discord from "./Component/Discord";
 import Sandbox from "./Component/Sandbox";
 import Telegram from "./Component/Telegram";
@@ -21,13 +19,23 @@ import WSAgentDetails from "@/app/token/[address]/components/WSAgentDetails";
 const Page = () => {
   const params = useParams<{ id: string }>();
   const { data, isLoading, fetchAgents } = useAgentDetailsStore();
-  const [selectedTab, setSelectedTab] = useState<
-    "telegram" | "discord" | "twitter" | "sandbox" | "edit" | ""
-  >("");
+  const searchParams = useSearchParams();
+  const type = searchParams.get("type");
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     fetchAgents(params.id);
   }, []);
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
+      return params.toString();
+    },
+    [searchParams]
+  );
 
   if (isLoading || !data) {
     return <div>Loading</div>;
@@ -38,7 +46,12 @@ const Page = () => {
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-semibold">i</h1>
-          <Button variant="ghost" onClick={() => setSelectedTab("edit")}>
+          <Button
+            variant="ghost"
+            onClick={() =>
+              router.push(pathname + "?" + createQueryString("type", "edit"))
+            }
+          >
             <Edit className="w-4 h-4" />
             Edit
           </Button>
@@ -66,7 +79,9 @@ const Page = () => {
         <Button
           variant="outline"
           className="flex items-center gap-2"
-          onClick={() => setSelectedTab("telegram")}
+          onClick={() =>
+            router.push(pathname + "?" + createQueryString("type", "telegram"))
+          }
         >
           <MessageSquare className="w-4 h-4" />
           Telegram
@@ -74,7 +89,9 @@ const Page = () => {
         <Button
           variant="outline"
           className="flex items-center gap-2"
-          onClick={() => setSelectedTab("discord")}
+          onClick={() =>
+            router.push(pathname + "?" + createQueryString("type", "discord"))
+          }
         >
           <MessageSquare className="w-4 h-4" />
           Discord
@@ -82,7 +99,9 @@ const Page = () => {
         <Button
           variant="outline"
           className="flex items-center gap-2"
-          onClick={() => setSelectedTab("sandbox")}
+          onClick={() =>
+            router.push(pathname + "?" + createQueryString("type", "sandbox"))
+          }
         >
           <FlaskConical className="w-4 h-4" />
           Sandbox
@@ -92,13 +111,13 @@ const Page = () => {
         You have successfully created your agent! Link TG bot to start talking &
         training your agent.
       </div>
-      {selectedTab == "telegram" ? (
+      {type == "telegram" ? (
         <Telegram />
-      ) : selectedTab == "discord" ? (
+      ) : type == "discord" ? (
         <Discord />
-      ) : selectedTab == "sandbox" ? (
+      ) : type == "sandbox" ? (
         <Sandbox />
-      ) : selectedTab == "edit" ? (
+      ) : type == "edit" ? (
         <EditForm />
       ) : (
         <div className="space-y-6">
