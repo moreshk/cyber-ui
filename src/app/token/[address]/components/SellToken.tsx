@@ -22,22 +22,22 @@ const SellToken = () => {
   const [loading, setLoading] = useState(false);
   const { isAuthenticated } = useAuth();
 
-  useEffect(() => {
-    const fetchBalance = async () => {
-      if (publicKey && data?.mintAddress) {
-        try {
-          const { balance } = await splTokenBalance(
-            connection,
-            publicKey,
-            new PublicKey(data.mintAddress)
-          );
-          setBalance(balance / 10 ** 9);
-        } catch (error) {
-          console.error("Error fetching token balance:", error);
-          setBalance(0);
-        }
+  const fetchBalance = async () => {
+    if (publicKey && data?.mintAddress) {
+      try {
+        const { balance } = await splTokenBalance(
+          connection,
+          publicKey,
+          new PublicKey(data.mintAddress)
+        );
+        setBalance(balance / 10 ** 9);
+      } catch (error) {
+        console.error("Error fetching token balance:", error);
+        setBalance(0);
       }
-    };
+    }
+  };
+  useEffect(() => {
     fetchBalance();
   }, [publicKey, data?.mintAddress, connection]);
 
@@ -84,6 +84,7 @@ const SellToken = () => {
           },
         });
       }
+      fetchBalance();
     } catch (e: any) {
       setLoading(false);
       toast.error(e.message);
@@ -106,7 +107,7 @@ const SellToken = () => {
               onChange={(e) => {
                 handleAmountChange(e.target.value);
               }}
-              placeholder="0.1"
+              placeholder="1253"
             />
           </div>
           <div className="flex gap-2">
