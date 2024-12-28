@@ -115,10 +115,12 @@ const Page = () => {
           Sandbox
         </Button>
       </div>
-      <div className="bg-black text-white p-4 rounded-lg mb-8">
-        You have successfully created your agent! Link TG bot to start talking &
-        training your agent.
-      </div>
+      {type !== "buy" && (
+        <div className="bg-black text-white p-4 rounded-lg mb-8">
+          You have successfully created your agent! Link TG bot to start talking
+          & training your agent.
+        </div>
+      )}
       {type == "telegram" ? (
         <Telegram />
       ) : type == "discord" ? (
