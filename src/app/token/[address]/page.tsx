@@ -13,6 +13,8 @@ import Swap from "./components/Swap";
 import { Badge } from "@/components/ui/badge";
 import { FaTelegram } from "react-icons/fa";
 import { buttonVariants } from "@/components/ui/button";
+import { CommentInput } from "./components/commentInput";
+import ExistingHolders from "./components/ExistingHolders";
 
 dayjs.extend(relativeTime);
 
@@ -137,10 +139,12 @@ const Page = () => {
             <Chart />
             <div className="flex-1 w-full">
               <Swap />
+              <ExistingHolders />
             </div>
           </div>
           <div>
             <div className="flex gap-2 items-center">
+              <CommentInput />
               {data?.agent?.telegramName && (
                 <a
                   href={`https://t.me/${data?.agent.telegramName}`}
