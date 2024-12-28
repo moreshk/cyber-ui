@@ -26,6 +26,7 @@ async function get(
 export async function getPoolReserves(token: string) {
   try {
     const idl = await import("./pump.json");
+    // @ts-ignore
     const program = new Program(idl, PROGRAM_ID) as Program<any>;
     const tokenMint = new PublicKey(token);
     const [pool] = PublicKey.findProgramAddressSync(
