@@ -82,22 +82,6 @@ const Page = () => {
         <Button
           variant="outline"
           className="flex items-center gap-2"
-          onClick={() => setSelectedTab("twitter")}
-        >
-          <Share2 className="w-4 h-4" />
-          Twitter
-        </Button>
-        <Button variant="outline" className="flex items-center gap-2">
-          <AlertCircle className="w-4 h-4" />
-          Token
-        </Button>
-        <Button variant="outline" className="flex items-center gap-2">
-          <Code className="w-4 h-4" />
-          API
-        </Button>
-        <Button
-          variant="outline"
-          className="flex items-center gap-2"
           onClick={() => setSelectedTab("sandbox")}
         >
           <FlaskConical className="w-4 h-4" />
