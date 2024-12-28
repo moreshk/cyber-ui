@@ -71,6 +71,7 @@ const BuyToken = () => {
         });
         setLoading(false);
       } catch (e: any) {
+        setLoading(false);
         toast.error(e.message);
         console.log(e);
       }
