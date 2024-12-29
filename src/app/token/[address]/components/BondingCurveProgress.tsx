@@ -7,20 +7,20 @@ import { useEffect } from "react";
 const BondingCurveProgress = () => {
   const { data } = useTokenDetailsStore();
 
-  // const getReservers = async () => {
-  //   try {
-  //     const { data: response } = await api.get(
-  //       `/v1/token/reserves?token=${data?.mintAddress}`
-  //     );
-  //     console.log("🚀 ~ getReservers ~ data:", response);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // };
+  const getReservers = async () => {
+    try {
+      const { data: response } = await api.get(
+        `/v1/token/reserves?token=${data?.mintAddress}`
+      );
+      console.log("🚀 ~ getReservers ~ data:", response);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
-  // useEffect(() => {
-  //   getReservers();
-  // }, []);
+  useEffect(() => {
+    getReservers();
+  }, []);
 
   return (
     <div className="space-y-6 pt-4">
