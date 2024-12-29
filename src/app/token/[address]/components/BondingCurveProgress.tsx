@@ -18,9 +18,9 @@ const BondingCurveProgress = () => {
     }
   };
 
-  // useEffect(() => {
-  //   getReservers();
-  // }, []);
+  useEffect(() => {
+    getReservers();
+  }, []);
 
   return (
     <div className="space-y-6 pt-4">
