@@ -17,13 +17,15 @@ import WSTokenDetails from "./components/WSTokenDetails";
 import Swap from "./components/Swap";
 import { Badge } from "@/components/ui/badge";
 import { FaTelegram } from "react-icons/fa";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { CommentInput } from "./components/commentInput";
 import ExistingHolders from "./components/ExistingHolders";
 import BondingCurveProgress from "./components/BondingCurveProgress";
 import BuyCredits from "./components/BuyCredits";
 import TxList from "./components/TxList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import api from "@/lib/axios";
+import { toast } from "sonner";
 
 dayjs.extend(relativeTime);
 
@@ -56,6 +58,18 @@ const Page = () => {
     return (
       <div className="max-w-7xl mx-auto">
         <div className="border rounded-xl mt-6 p-6">
+          <Button
+            onClick={async () => {
+              try {
+                await api.get(`/v1/token/migration?token=${data.mintAddress}`);
+              } catch (e) {
+                console.log(e);
+                toast.error("error migraing");
+              }
+            }}
+          >
+            Migration
+          </Button>
           <div key={data.mintAddress} className="flex gap-2">
             <img
               src={data.imgUrl}
