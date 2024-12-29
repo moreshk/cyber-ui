@@ -8,11 +8,14 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import useSWR from "swr";
+import { Coin } from "../../type";
 
 dayjs.extend(relativeTime);
 
 export default function Home() {
   const { data, isLoading, fetchTokens } = useTokenStore();
+  const { data: kingOfTheHill } = useSWR<Coin>("/v1/token/king-of-the-hill");
 
   useEffect(() => {
     fetchTokens();
@@ -36,6 +39,30 @@ export default function Home() {
       <p className="text-center text-2xl font-semibold italic pt-7">
         King of the hill
       </p>
+      {kingOfTheHill && (
+        <div className="max-w-xl mx-auto border rounded-2xl">
+          <Link
+            href={`/token/${kingOfTheHill.mintAddress}`}
+            key={kingOfTheHill.mintAddress}
+            className="flex gap-2 hover:bg-gray-200 rounded-lg p-4"
+          >
+            <img
+              src={kingOfTheHill.imgUrl}
+              className="w-32 h-32 border rounded-lg"
+              width={128}
+              height={128}
+              alt="token image"
+            />
+            <div>
+              <p>
+                Create by {truncateAddress(kingOfTheHill.creatorWalletAddress)}
+              </p>
+              <p>{dayjs(kingOfTheHill.createdAt).fromNow()}</p>
+              <p>{kingOfTheHill.description}</p>
+            </div>
+          </Link>
+        </div>
+      )}
       <div className="max-w-7xl mx-auto pt-8">
         <div className="grid grid-cols-3 gap-4">
           {data?.map((coin) => (
