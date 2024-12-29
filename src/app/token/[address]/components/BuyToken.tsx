@@ -87,9 +87,21 @@ const BuyToken = () => {
           swap.recentBlockhash = blockhash;
           swap.feePayer = publicKey;
           const signedTransaction = await signTransaction(swap);
+
+          const rawTransaction = signedTransaction.serialize();
+
           const signature = await connection.sendRawTransaction(
-            signedTransaction.serialize()
+            rawTransaction,
+            {
+              skipPreflight: false, // Optional: Skip preflight checks if you trust the transaction
+            }
           );
+          await connection.confirmTransaction(signature, "finalized");
+          await api.post("/v1/coin/tx", {
+            type: "buy",
+            token: data.mintAddress,
+            txHash: signature,
+          });
           setLoading(false);
           toast("Event has been created", {
             action: {
