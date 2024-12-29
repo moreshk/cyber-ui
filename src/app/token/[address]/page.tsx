@@ -161,10 +161,10 @@ const Page = () => {
               </div>
             </div>
           </div>
-          <div className="flex pt-7">
-            <div>
+          <div className="grid grid-cols-3 gap-10 pt-7">
+            <div className="col-span-2">
               <Chart />
-              <div>
+              <div className="pt-9">
                 <div className="flex gap-2 items-center">
                   <CommentInput />
                   {data?.agent?.telegramName && (
