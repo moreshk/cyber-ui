@@ -57,3 +57,20 @@ export interface Owner {
   createdAt: string;
   deletedAt: null;
 }
+
+interface Tx {
+  id: number;
+  coinId: string;
+  walletAddress: string;
+  type: string;
+  pricePerCoin: string;
+  solQuantity: string;
+  tokenQuantity: string;
+  transactionHash: string;
+  metadata: string;
+  timestamp: null;
+  updatedAt: null;
+  createdAt: string;
+  deletedAt: null;
+  user: Owner;
+}

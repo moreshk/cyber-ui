@@ -22,6 +22,8 @@ import { CommentInput } from "./components/commentInput";
 import ExistingHolders from "./components/ExistingHolders";
 import BondingCurveProgress from "./components/BondingCurveProgress";
 import BuyCredits from "./components/BuyCredits";
+import TxList from "./components/TxList";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 dayjs.extend(relativeTime);
 
@@ -164,39 +166,53 @@ const Page = () => {
           <div className="grid grid-cols-3 gap-10 pt-7">
             <div className="col-span-2">
               <Chart />
+              <></>
               <div className="pt-9">
-                <div className="flex gap-2 items-center">
-                  <CommentInput />
-                  {data?.agent?.telegramName && (
-                    <a
-                      href={`https://t.me/${data?.agent.telegramName}`}
-                      className={buttonVariants({})}
-                    >
-                      Telegram {data?.agent.telegramName}
-                      <FaTelegram />
-                    </a>
-                  )}
-                </div>
-                <div className="space-y-4 max-w-2xl pt-3">
-                  {data.comments.map((comment) => (
-                    <div
-                      key={comment.id}
-                      className="bg-gray-100 rounded-lg p-4"
-                    >
-                      <div className="flex gap-2">
-                        <Avatar
-                          name={comment.walletAddress}
-                          height={20}
-                          width={20}
-                          variant="pixel"
-                        />
-                        <Badge>{first4Characters(comment.walletAddress)}</Badge>
-                        {dayjs(comment.createdAt).fromNow()}
-                      </div>
-                      {comment.content}
+                <Tabs defaultValue="comment">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="comment">Thread</TabsTrigger>
+                    <TabsTrigger value="tx">Trades</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="comment">
+                    <div className="flex items-center gap-2">
+                      <CommentInput />
+                      {data?.agent?.telegramName && (
+                        <a
+                          href={`https://t.me/${data?.agent.telegramName}`}
+                          className={buttonVariants({})}
+                        >
+                          Telegram {data?.agent.telegramName}
+                          <FaTelegram />
+                        </a>
+                      )}
                     </div>
-                  ))}
-                </div>
+                    <div className="space-y-4 max-w-2xl pt-3">
+                      {data.comments.map((comment) => (
+                        <div
+                          key={comment.id}
+                          className="bg-gray-100 rounded-lg p-4"
+                        >
+                          <div className="flex gap-2">
+                            <Avatar
+                              name={comment.walletAddress}
+                              height={20}
+                              width={20}
+                              variant="pixel"
+                            />
+                            <Badge>
+                              {first4Characters(comment.walletAddress)}
+                            </Badge>
+                            {dayjs(comment.createdAt).fromNow()}
+                          </div>
+                          {comment.content}
+                        </div>
+                      ))}
+                    </div>
+                  </TabsContent>
+                  <TabsContent value="tx">
+                    <TxList />
+                  </TabsContent>
+                </Tabs>
               </div>
             </div>
             <div className="flex-1 w-full">
