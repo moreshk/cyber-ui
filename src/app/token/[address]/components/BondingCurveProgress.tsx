@@ -38,7 +38,7 @@ const BondingCurveProgress = () => {
 
   useEffect(() => {
     getReservers();
-  }, []);
+  }, [data]);
 
   if (reserves) {
     const bondingCurveProgress = (
