@@ -10,13 +10,15 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import useSWR from "swr";
 import { Coin } from "../../type";
+import { Crown } from "lucide-react";
+import { FaTelegram } from "react-icons/fa";
 
 dayjs.extend(relativeTime);
 
 export default function Home() {
   const { data, isLoading, fetchTokens } = useTokenStore();
   const { data: kingOfTheHill } = useSWR<Coin>("/v1/token/king-of-the-hill");
-
+  console.log(data);
   useEffect(() => {
     fetchTokens();
   }, []);
@@ -25,7 +27,7 @@ export default function Home() {
     <div>Loading</div>;
   }
   return (
-    <div className="max-w-7xl mx-auto pt-2">
+    <div className="mx-auto pt-2">
       <div className="flex justify-center items-center pt-6">
         <Link
           href="/create-agent"
@@ -36,52 +38,115 @@ export default function Home() {
           Create Agent
         </Link>
       </div>
-      <p className="text-center text-2xl font-semibold italic pt-7">
-        King of the hill
-      </p>
       {kingOfTheHill && (
-        <div className="max-w-xl mx-auto border rounded-2xl">
-          <Link
-            href={`/token/${kingOfTheHill.mintAddress}`}
-            key={kingOfTheHill.mintAddress}
-            className="flex gap-2 hover:bg-gray-200 rounded-lg p-4"
-          >
-            <img
-              src={kingOfTheHill.imgUrl}
-              className="w-32 h-32 border rounded-lg"
-              width={128}
-              height={128}
-              alt="token image"
-            />
-            <div>
-              <p>
-                Create by {truncateAddress(kingOfTheHill.creatorWalletAddress)}
-              </p>
-              <p>{dayjs(kingOfTheHill.createdAt).fromNow()}</p>
-              <p>{kingOfTheHill.description}</p>
-            </div>
-          </Link>
-        </div>
-      )}
-      <div className="max-w-7xl mx-auto pt-8">
-        <div className="grid grid-cols-3 gap-4">
-          {data?.map((coin) => (
+        <>
+          <p className="text-center text-2xl font-semibold italic py-7">
+            King of the hill
+          </p>
+          <div className="max-w-xl mx-auto">
             <Link
-              href={`/token/${coin.mintAddress}`}
-              key={coin.mintAddress}
-              className="flex gap-2 hover:bg-gray-200 rounded-lg p-4"
+              href={`/token/${kingOfTheHill.mintAddress}`}
+              key={kingOfTheHill.mintAddress}
+              className="flex gap-2 rounded-lg p-4 hover:bg-baseSecondary"
             >
               <img
-                src={coin.imgUrl}
-                className="w-32 h-32 border rounded-lg"
+                src={kingOfTheHill.imgUrl}
+                className="w-32 h-32"
                 width={128}
                 height={128}
                 alt="token image"
               />
               <div>
-                <p>Create by {truncateAddress(coin.creatorWalletAddress)}</p>
-                <p>{dayjs(coin.createdAt).fromNow()}</p>
-                <p>{coin.description}</p>
+                <div className="flex gap-2 items-center">
+                  <p className="text-sm">
+                    Create by{" "}
+                    {truncateAddress(kingOfTheHill.creatorWalletAddress)}
+                  </p>
+                </div>
+                <p className="text-sm">
+                  {dayjs(kingOfTheHill.createdAt).fromNow()}
+                </p>
+                {kingOfTheHill.marketCap && (
+                  <div className="text-sm text-basePrimary flex items-center gap-2 font-semibold">
+                    <p>Market cap: ${kingOfTheHill.marketCap || "0"}</p>
+                    {kingOfTheHill.kingOfTheHillTimeStamp && (
+                      <Crown className="w-4 h-4 rotate-6" />
+                    )}
+                  </div>
+                )}
+                <p className="text-sm text-basePrimary">
+                  Credits Used {kingOfTheHill.agent.usedPoints}
+                </p>
+                <p>
+                  <span className="font-bold">
+                    {kingOfTheHill.name}({kingOfTheHill.symbol}):
+                  </span>{" "}
+                  {kingOfTheHill.description}
+                </p>
+                <div className="pt-2">
+                  {kingOfTheHill?.agent?.telegramName && (
+                    <a
+                      href={`https://t.me/${kingOfTheHill?.agent.telegramName}`}
+                      className={buttonVariants({})}
+                    >
+                      <FaTelegram />
+                    </a>
+                  )}
+                </div>
+              </div>
+            </Link>
+          </div>
+        </>
+      )}
+      <div className="px-10 mx-auto pt-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 grid-cols-3 gap-4">
+          {data?.map((coin) => (
+            <Link
+              href={`/token/${coin.mintAddress}`}
+              key={coin.mintAddress}
+              className="flex gap-2 rounded-lg p-4 hover:bg-baseSecondary"
+            >
+              <img
+                src={coin.imgUrl}
+                className="w-32 h-32"
+                width={128}
+                height={128}
+                alt="token image"
+              />
+              <div>
+                <div className="flex gap-2 items-center">
+                  <p className="text-sm">
+                    Create by {truncateAddress(coin.creatorWalletAddress)}
+                  </p>
+                </div>
+                <p className="text-sm">{dayjs(coin.createdAt).fromNow()}</p>
+                {coin.marketCap && (
+                  <div className="text-sm text-basePrimary flex items-center gap-2 font-semibold">
+                    <p>Market cap: ${coin.marketCap || "0"}</p>
+                    {coin.kingOfTheHillTimeStamp && (
+                      <Crown className="w-4 h-4 rotate-6" />
+                    )}
+                  </div>
+                )}
+                <p className="text-sm text-basePrimary">
+                  Credits Used {coin.agent.usedPoints}
+                </p>
+                <p>
+                  <span className="font-bold">
+                    {coin.name}({coin.symbol}):
+                  </span>{" "}
+                  {coin.description}
+                </p>
+                <div className="pt-2">
+                  {coin?.agent?.telegramName && (
+                    <a
+                      href={`https://t.me/${coin?.agent.telegramName}`}
+                      className={buttonVariants({})}
+                    >
+                      <FaTelegram />
+                    </a>
+                  )}
+                </div>
               </div>
             </Link>
           ))}

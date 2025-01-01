@@ -1,5 +1,6 @@
 export interface Coin {
   mintAddress: string;
+  kingOfTheHillTimeStamp: string;
   creatorWalletAddress: string;
   name: string;
   symbol: string;
@@ -15,6 +16,8 @@ export interface Coin {
   updatedAt: string;
   createdAt: string;
   deletedAt: null;
+  marketCap?: string;
+  agent: Agents;
 }
 export interface Agents {
   id: number;
