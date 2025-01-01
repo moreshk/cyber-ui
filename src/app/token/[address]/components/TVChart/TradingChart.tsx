@@ -2,6 +2,7 @@
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import Script from "next/script";
+import useTokenDetailsStore from "@/store/useTokenDetailsStore";
 
 const TVChartContainer = dynamic(
   () => import("./TVChartContainer").then((mod) => mod.TVChartContainer),
@@ -9,6 +10,7 @@ const TVChartContainer = dynamic(
 );
 
 export const TradingChart = () => {
+  const { data } = useTokenDetailsStore();
   const [isScriptReady, setIsScriptReady] = useState(false);
 
   return (
@@ -21,7 +23,11 @@ export const TradingChart = () => {
         }}
       />
       {isScriptReady && (
-        <TVChartContainer name="dsffdsf" pairIndex={10} token={"sfsd"} />
+        <TVChartContainer
+          name={data?.name || ""}
+          pairIndex={10}
+          token={data?.name || ""}
+        />
       )}
     </>
   );

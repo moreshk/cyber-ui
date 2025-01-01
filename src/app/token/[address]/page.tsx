@@ -26,6 +26,7 @@ import TxList from "./components/TxList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import api from "@/lib/axios";
 import { toast } from "sonner";
+import useTokenGraphDetailsStore from "@/store/useTokenGraphDetailsStore";
 
 dayjs.extend(relativeTime);
 
@@ -36,7 +37,11 @@ const Page = () => {
   const type = searchParams.get("type");
   const router = useRouter();
   const pathname = usePathname();
-
+  const {
+    fetchTokenGraph,
+    isLoading: fetchTokenGraphLoading,
+    data: tokenGraph,
+  } = useTokenGraphDetailsStore();
   const createQueryString = useCallback(
     (name: string, value: string) => {
       const params = new URLSearchParams(searchParams.toString());
@@ -48,11 +53,14 @@ const Page = () => {
 
   useEffect(() => {
     fetchTokens(address);
+    fetchTokenGraph(address);
   }, []);
 
-  if (isLoading || !data) {
+  if (isLoading || !data || fetchTokenGraphLoading || !tokenGraph) {
     <div>Loading</div>;
   }
+
+  console.log(tokenGraph);
 
   if (data) {
     return (
