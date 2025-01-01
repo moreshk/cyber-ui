@@ -1,12 +1,18 @@
 "use client";
 import { buttonVariants } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Plus } from "lucide-react";
+import { Crown, Plus } from "lucide-react";
 import Link from "next/link";
 import useSWR from "swr";
+import { Coin } from "../../../type";
+import { truncateAddress } from "@/lib/utils";
+import dayjs from "dayjs";
+import { FaTelegram } from "react-icons/fa";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 
 const Page = () => {
-  const { data, isLoading } = useSWR("/v1/agent/my-agents");
+  const { data, isLoading } = useSWR<Coin[]>("/v1/agent/my-agents");
 
   if (isLoading || !data) {
     return <div>Loading</div>;
@@ -21,23 +27,61 @@ const Page = () => {
         </Link>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {data.agents.map((agent: any) => (
-          <Link key={agent.id} href={`/agent/${agent.coinId}`}>
-            <Card className="p-6 bg-white rounded-lg shadow">
-              <div className="flex items-center gap-2 mb-4">
-                <h2 className="text-xl font-semibold">{agent.name}</h2>
-              </div>
-
-              <p className="text-gray-600 mb-8">{agent.description}</p>
-
-              <div className="border-t border-black my-4"></div>
-
-              <div className="flex justify-center">
-                <p className="text-gray-600">
-                  Credits: <span className="font-semibold">{agent.points}</span>
+        {data.map((coin: Coin) => (
+          <Link
+            href={`/agent/${coin.mintAddress}`}
+            key={coin.mintAddress}
+            className="rounded-lg hover:bg-baseSecondary border border-basePrimary p-2"
+          >
+            <div className="gap-2 rounded-lg hover:bg-baseSecondary flex items-center">
+              <img
+                src={coin.imgUrl}
+                className="w-32 h-32"
+                width={128}
+                height={128}
+                alt="token image"
+              />
+              <div>
+                <div className="flex gap-2 items-center">
+                  <p className="text-sm">
+                    Create by {truncateAddress(coin.creatorWalletAddress)}
+                  </p>
+                </div>
+                <p className="text-sm">{dayjs(coin.createdAt).fromNow()}</p>
+                {coin.marketCap && (
+                  <div className="text-sm text-basePrimary flex items-center gap-2 font-semibold">
+                    <p>Market cap: ${coin.marketCap || "0"}</p>
+                    {coin.kingOfTheHillTimeStamp && (
+                      <Crown className="w-4 h-4 rotate-6" />
+                    )}
+                  </div>
+                )}
+                <p className="text-sm text-basePrimary">
+                  Credits Used {coin.agent.usedPoints}
                 </p>
+                <p>
+                  <span className="font-bold">
+                    {coin.name}({coin.symbol}):
+                  </span>{" "}
+                  {coin.description}
+                </p>
+                <div className="pt-2">
+                  {coin?.agent?.telegramName && (
+                    <a
+                      href={`https://t.me/${coin?.agent.telegramName}`}
+                      className={buttonVariants({})}
+                    >
+                      <FaTelegram />
+                    </a>
+                  )}
+                </div>
               </div>
-            </Card>
+            </div>
+            <div className="mt-7 border-t border-t-basePrimary">
+              <p className="text-center py-2 text-basePrimary font-bold">
+                Credits Remaining {coin.agent.points}
+              </p>
+            </div>
           </Link>
         ))}
       </div>
