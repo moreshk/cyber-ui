@@ -34,13 +34,13 @@ const Telegram = () => {
         <p className="text-2xl font-bold">
           Set Your Telegram BOT Token to interact with the agent
         </p>
-        {!data?.telegramName && (
+        {data?.telegramName && (
           <a
             href={`https://t.me/${data?.telegramName}`}
             target="_blank"
             className={buttonVariants({})}
           >
-            <FaTelegram /> @{data?.telegramName || "sfdfs"}
+            <FaTelegram /> @{data?.telegramName}
           </a>
         )}
         <Input
