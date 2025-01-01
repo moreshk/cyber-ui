@@ -135,45 +135,41 @@ function Page() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <div className="flex justify-center items-center w-28 h-28 bg-basePrimary rounded-full mx-auto">
+                <div className="flex justify-center items-center">
                   <FormField
                     control={form.control}
                     name="image"
                     render={({ field }) => (
-                      <>
-                        <FormItem>
-                          <label htmlFor="image-url">
-                            <ImageUp className="w-10 h-10 text-baseSecondary" />
-                          </label>
-                          <FormControl>
-                            <input
-                              className="sr-only"
-                              id="image-url"
-                              type="file"
-                              accept="image/jpeg,image/png,image/webp"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                  field.onChange(file);
-                                }
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                        {image && (
-                          <div className="mt-4">
-                            <p className="text-sm text-gray-500">
-                              Image Preview:
-                            </p>
+                      <FormItem className="flex flex-col justify-center items-center">
+                        <label htmlFor="image-url">
+                          {image ? (
                             <img
                               src={URL.createObjectURL(image)}
                               alt="Preview"
-                              className="mt-2 h-32 w-32 rounded border"
+                              className="h-32 w-32 rounded"
                             />
-                          </div>
-                        )}
-                      </>
+                          ) : (
+                            <div className="h-32 w-32 bg-basePrimary rounded-full flex justify-center items-center">
+                              <ImageUp className="w-10 h-10 text-baseSecondary" />
+                            </div>
+                          )}
+                        </label>
+                        <FormControl>
+                          <input
+                            className="sr-only"
+                            id="image-url"
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                field.onChange(file);
+                              }
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
                     )}
                   />
                 </div>
