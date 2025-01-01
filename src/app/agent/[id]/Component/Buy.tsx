@@ -61,7 +61,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-lg flex flex-col h-full">
+    <div className="bg-baseSecondary p-6 shadow-lg flex flex-col h-full">
       <div className="flex justify-center mb-6">
         <div
           className={`w-32 h-32 ${color} rounded-lg shadow-lg flex items-center justify-center`}
@@ -76,20 +76,16 @@ const PricingCard: React.FC<PricingCardProps> = ({
 
       <h2 className="text-2xl font-bold mb-2">{title}</h2>
 
-      <p className="text-gray-600 mb-6 flex-grow">{description}</p>
+      <p className="mb-6 flex-grow">{description}</p>
 
       <div className="space-y-4">
         <Button
           loading={loading}
-          className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors"
+          className="w-full"
           onClick={handleTransaction}
         >
           {price} SOL
         </Button>
-
-        <p className="text-xs text-gray-500 text-center">
-          10% will be used to buy back & burning SHAT™
-        </p>
       </div>
     </div>
   );
@@ -125,11 +121,10 @@ const Buy: React.FC = () => {
 
   return (
     <div>
-      <div className="mb-4 bg-blue-500 text-white p-4 rounded-lg text-center">
+      <div className="mb-4 bg-baseSecondary text-white p-4 rounded-lg text-center">
         Your agent runs on credits. 1 Telegram message / 1 prompt change / 1
         Tweet each uses one credit.
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {packages.map((pkg, index) => (
           <PricingCard key={index} {...pkg} />

@@ -43,7 +43,7 @@ export default function Home() {
           <p className="text-center text-2xl font-semibold italic py-7">
             King of the hill
           </p>
-          <div className="max-w-xl mx-auto">
+          <div className="flex justify-center items-center">
             <Link
               href={`/token/${kingOfTheHill.mintAddress}`}
               key={kingOfTheHill.mintAddress}

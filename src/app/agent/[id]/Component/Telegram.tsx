@@ -1,8 +1,9 @@
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import api from "@/lib/axios";
 import useAgentDetailsStore from "@/store/useAgentDetailsStore";
 import React, { useState } from "react";
+import { FaTelegram } from "react-icons/fa";
 import { toast } from "sonner";
 
 const Telegram = () => {
@@ -29,17 +30,17 @@ const Telegram = () => {
 
   return (
     <div className="max-w-xl mx-auto p-6 rounded-xl shadow bg-gradient-to-b">
-      <div className="flex gap-4 items-center justify-center flex-col py-8 text-center px-12">
+      <div className="flex gap-4 items-center justify-center flex-col text-center px-12">
         <p className="text-2xl font-bold">
           Set Your Telegram BOT Token to interact with the agent
         </p>
-        {data?.telegramName && (
+        {!data?.telegramName && (
           <a
             href={`https://t.me/${data?.telegramName}`}
             target="_blank"
-            className=""
+            className={buttonVariants({})}
           >
-            {data?.telegramName}
+            <FaTelegram /> @{data?.telegramName || "sfdfs"}
           </a>
         )}
         <Input
@@ -66,9 +67,9 @@ const Telegram = () => {
                 href="https://t.me/botfather"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 underline"
+                className="text-basePrimary underline"
               >
-                https://discord.com/developers
+                t.me/botfather,
               </a>
               Telegram&apos;s official Bot creation tool
             </li>
@@ -82,7 +83,7 @@ const Telegram = () => {
             </li>
             <li>
               Don&apos;t forget to make the bot{" "}
-              <span className="text-purple-600">admin in your group chat</span>{" "}
+              <span className="text-basePrimary">admin in your group chat</span>{" "}
               for it to work.
             </li>
             <li>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect } from "react";
-import { Edit, MessageSquare, FlaskConical } from "lucide-react";
+import { CircleFadingArrowUp, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   useParams,
@@ -16,6 +16,7 @@ import EditForm from "./Component/EditForm";
 import useAgentDetailsStore from "@/store/useAgentDetailsStore";
 import WSAgentDetails from "@/app/token/[address]/components/WSAgentDetails";
 import Buy from "./Component/Buy";
+import { FaTelegram } from "react-icons/fa";
 
 const Page = () => {
   const params = useParams<{ id: string }>();
@@ -43,69 +44,51 @@ const Page = () => {
   }
 
   return (
-    <div className="min-h-screen p-6 max-w-7xl mx-auto">
+    <div className="p-6 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-semibold">i</h1>
-          <Button
-            variant="ghost"
-            onClick={() =>
-              router.push(pathname + "?" + createQueryString("type", "edit"))
-            }
-          >
-            <Edit className="w-4 h-4" />
-            Edit
-          </Button>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="text-right">
-            <div className="flex items-center gap-2">
-              <span>Credits</span>
-              <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
-                Active
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold">{data.points}</span>
-              <Button variant="link" className=" text-sm">
-                Promo code
-              </Button>
-            </div>
+        <div className="flex items-center gap-3 justify-between w-full">
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-semibold">{data.name}</h1>
+            <Button
+              variant="ghost"
+              onClick={() =>
+                router.push(pathname + "?" + createQueryString("type", "edit"))
+              }
+            >
+              <Edit className="w-4 h-4" />
+              Edit
+            </Button>
           </div>
           <Button
-            className="text-white"
             onClick={() =>
               router.push(pathname + "?" + createQueryString("type", "buy"))
             }
           >
-            Top Up
+            Credits Remaining
+            <span className="text-2xl font-bold">{data.points}</span>
           </Button>
         </div>
       </div>
       <div className="flex flex-wrap gap-3 mb-6">
         <Button
-          variant="outline"
           className="flex items-center gap-2"
           onClick={() =>
             router.push(pathname + "?" + createQueryString("type", "telegram"))
           }
         >
-          <MessageSquare className="w-4 h-4" />
+          <FaTelegram className="w-4 h-4" />
           Telegram
         </Button>
-        <Button
-          variant="outline"
+        {/* <Button
           className="flex items-center gap-2"
           onClick={() =>
             router.push(pathname + "?" + createQueryString("type", "discord"))
           }
         >
-          <MessageSquare className="w-4 h-4" />
+          <FaDiscord className="w-4 h-4" />
           Discord
-        </Button>
-        <Button
-          variant="outline"
+        </Button> */}
+        {/* <Button
           className="flex items-center gap-2"
           onClick={() =>
             router.push(pathname + "?" + createQueryString("type", "sandbox"))
@@ -113,10 +96,18 @@ const Page = () => {
         >
           <FlaskConical className="w-4 h-4" />
           Sandbox
+        </Button> */}
+        <Button
+          onClick={() =>
+            router.push(pathname + "?" + createQueryString("type", "buy"))
+          }
+        >
+          <CircleFadingArrowUp className="w-4 h-4" />
+          Top Up
         </Button>
       </div>
-      {type !== "buy" && (
-        <div className="bg-black text-white p-4 rounded-lg mb-8">
+      {type !== "buy" && !data.telegramName && (
+        <div className="bg-baseSecondary text-white p-4 rounded-lg mb-8">
           You have successfully created your agent! Link TG bot to start talking
           & training your agent.
         </div>
@@ -135,29 +126,30 @@ const Page = () => {
         <div className="space-y-6">
           <div>
             <h2 className="text-lg font-semibold mb-2">Description</h2>
-            <div className="bg-white p-4 rounded-lg border border-gray-200">
+            <div className="bg-baseSecondary p-4 rounded-lg font-medium">
               <p>{data.description}</p>
             </div>
           </div>
-
           <div>
             <h2 className="text-lg font-semibold mb-2">Personality</h2>
-            <div className="bg-white p-4 rounded-lg border border-gray-200">
+            <div className="bg-baseSecondary p-4 rounded-lg font-medium">
               <p>{data.personality}</p>
             </div>
           </div>
           <div>
             <h2 className="text-lg font-semibold mb-2">Instruction</h2>
-            <div className="bg-white p-4 rounded-lg border border-gray-200">
+            <div className="bg-baseSecondary p-4 rounded-lg font-medium">
               <p>{data.instruction}</p>
             </div>
           </div>
-          <div>
-            <h2 className="text-lg font-semibold mb-2">Knowledge Base</h2>
-            <div className="bg-white p-4 rounded-lg border border-gray-200 min-h-[100px]">
-              {data.knowledge}
+          {data.knowledge && (
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Knowledge Base</h2>
+              <div className="bg-baseSecondary p-4 rounded-lg font-medium">
+                {data.knowledge}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
       <WSAgentDetails />
