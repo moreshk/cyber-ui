@@ -24,6 +24,7 @@ import {
   ErrorCallback,
   PeriodParams,
 } from "@/libraries/charting_library";
+import axios from "axios";
 
 export type TVChartContainerProps = {
   name: string;
@@ -34,6 +35,9 @@ export type TVChartContainerProps = {
   };
 };
 
+// Add this outside the component to cache the data
+const dataCache = new Map<string, Bar[]>();
+
 const mockDataFeed: ChartingLibraryWidgetOptions["datafeed"] = {
   onReady: (callback) => {
     setTimeout(() => {
@@ -41,7 +45,17 @@ const mockDataFeed: ChartingLibraryWidgetOptions["datafeed"] = {
         supports_marks: false,
         supports_timescale_marks: false,
         supports_time: true,
-        supported_resolutions: ["1D", "1W", "1M"] as ResolutionString[]
+        supported_resolutions: [
+          "1",
+          // "3",
+          "5",
+          // "15",
+          // "30",
+          // "60",
+          // "120",
+          // "240",
+          // "1D",
+        ] as ResolutionString[],
       });
     }, 0);
   },
@@ -57,19 +71,30 @@ const mockDataFeed: ChartingLibraryWidgetOptions["datafeed"] = {
         session: "24x7",
         timezone: "Etc/UTC",
         minmov: 1,
-        pricescale: 100,
-        has_intraday: false,
+        pricescale: 10000000000,
+        has_intraday: true,
+        has_daily: true,
         description: symbolName,
         exchange: "",
         listed_exchange: "",
         format: "price" as SeriesFormat,
         type: "crypto",
-        supported_resolutions: ["1D", "1W", "1M"] as ResolutionString[],
+        supported_resolutions: [
+          "1",
+          // "3",
+          "5",
+          // "15",
+          // "30",
+          // "60",
+          // "120",
+          // "240",
+          // "1D",
+        ] as ResolutionString[],
       };
       onSymbolResolvedCallback(symbolInfo);
     }, 0);
   },
-  getBars: (
+  getBars: async (
     symbolInfo: LibrarySymbolInfo,
     resolution: ResolutionString,
     periodParams: PeriodParams,
@@ -77,38 +102,56 @@ const mockDataFeed: ChartingLibraryWidgetOptions["datafeed"] = {
     onErrorCallback: ErrorCallback
   ) => {
     try {
-      const { from, to } = periodParams;
-      const bars: Bar[] = [];
-      let interval = 86400; // 86400 seconds = 1 day
+      const { from, to, countBack } = periodParams;
+      const cacheKey = `${symbolInfo.name}-${resolution}-${from}-${to}`;
 
-      if (resolution === "1D") {
-        interval = interval; // 1 day
-      } else if (resolution === "1M") {
-        interval = 30 * interval; // 30 days in seconds
-      } else if (resolution === "1W") {
-        interval = 7 * interval; // 7 days in seconds
+      // Check cache
+      if (dataCache.has(cacheKey)) {
+        const cachedData = dataCache.get(cacheKey)!;
+        onHistoryCallback(cachedData, { 
+          noData: cachedData.length === 0,
+          nextTime: cachedData.length > 0 ? cachedData[0].time : undefined 
+        });
+        return;
       }
 
-      // show data after Tue Mar 05 2024 00:00:00 GMT+0000
-      if (from >= 1709596800) {       
-        // Generate one bar per day between from and to
-        for (let time = from; time < to; time += interval) {
-          const randomChange = Math.random() * 2 - 1; // Random value between -1 and 1
-          const basePrice = 100; // Base price for demonstration
-          
-          const bar: Bar = {
-            time: time * 1000, // Convert to milliseconds
-            open: basePrice + randomChange,
-            high: basePrice + randomChange + Math.random() * 2,
-            low: basePrice + randomChange - Math.random() * 2,
-            close: basePrice + randomChange + (Math.random() - 0.5),
-            volume: Math.floor(Math.random() * 10000) + 1000,
-          };
-          bars.push(bar);
+      // Calculate extended range
+      const extendedFrom = from - (countBack * 2);
+      
+      // Convert resolution to API format if needed
+      const apiResolution = resolution === "1D" ? "1440" : resolution;
+      
+      const response = await axios.get(`/api/candlesticks`, {
+        params: {
+          // token: 'twzY8ahJ8FEtc7db81ZrPrVwxzHu7WXGcmEKXXtpump',
+          token: '2wWWiDvxPuLrkMMRF5fvjskxf91GXN6nppukAgF2cVnv',
+          from: extendedFrom,
+          to,
+          resolution: apiResolution
         }
+      });
+
+      const chartData = response.data;
+      
+      if (!chartData || chartData.length === 0) {
+        onHistoryCallback([], { 
+          noData: true,
+          nextTime: undefined
+        });
+        return;
       }
 
-      onHistoryCallback(bars, { noData: false });
+      const bars: Bar[] = chartData
+        .sort((a: Bar, b: Bar) => a.time - b.time);
+
+      // Cache the data
+      dataCache.set(cacheKey, bars);
+
+      onHistoryCallback(bars, { 
+        noData: false,
+        nextTime: bars.length > 0 ? bars[0].time : undefined
+      });
+
     } catch (error) {
       console.error("Error in getBars:", error);
       onErrorCallback("Error fetching bars");
@@ -122,15 +165,15 @@ const mockDataFeed: ChartingLibraryWidgetOptions["datafeed"] = {
     onResetCacheNeededCallback
   ) => {
     const interval = setInterval(() => {
-      const bar: Bar = {
-        time: Date.now(),
-        open: 100,
-        high: 120,
-        low: 90,
-        close: 110,
-        volume: 1200,
-      };
-      onRealtimeCallback(bar);
+      // const bar: Bar = {
+      //   time: Date.now(), // 1623456789*1000
+      //   open: 100,
+      //   high: 120,
+      //   low: 90,
+      //   close: 110,
+      //   volume: 1200,
+      // };
+      // onRealtimeCallback(bar);
     }, 5000);
 
     return () => clearInterval(interval);
@@ -143,6 +186,22 @@ const mockDataFeed: ChartingLibraryWidgetOptions["datafeed"] = {
   },
 };
 
+// Add this function to clean up old cache entries
+const cleanupCache = () => {
+  const now = Date.now();
+  const maxAge = 30 * 60 * 1000; // 30 minutes
+  
+  dataCache.forEach((value, key) => {
+    const [, , timestamp] = key.split('-');
+    if (now - Number(timestamp) > maxAge) {
+      dataCache.delete(key);
+    }
+  });
+};
+
+// Call this periodically or when appropriate
+setInterval(cleanupCache, 15 * 60 * 1000); // Clean up every 15 minutes
+
 export const TVChartContainer = ({
   name,
   pairIndex,
@@ -153,7 +212,7 @@ export const TVChartContainer = ({
   ) as React.MutableRefObject<HTMLInputElement>;
   const tvWidgetRef = useRef<IChartingLibraryWidget | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  
   useEffect(() => {
     if (!chartContainerRef.current) {
       return () => {};
@@ -177,21 +236,71 @@ export const TVChartContainer = ({
           foregroundColor: "#111114",
         },
         enabled_features: enabledFeatures,
-        disabled_features: disabledFeatures,
+        disabled_features: [
+          ...disabledFeatures.filter(feature => 
+            feature !== 'hide_right_scale' && 
+            feature !== 'header_symbol_search' &&
+            feature !== 'header_settings'
+          ),
+          'future_data',
+          'go_to_date',
+          'time_scale_right_margin',
+        ],
         client_id: "tradingview.com",
         user_id: "public_user_id",
         fullscreen: false,
         autosize: true,
         // custom_css_url: "/tradingview-chart.css",
-        overrides: chartOverrides,
-        interval: "1D" as ResolutionString,
-        // timeframe: "6M",
+        overrides: {
+          ...chartOverrides,
+          "mainSeriesProperties.priceFormat.precision": 10,
+          "mainSeriesProperties.priceFormat.minMove": 0.0000000001,
+          "mainSeriesProperties.priceFormat.type": "price",
+          // "mainSeriesProperties.priceFormat.pattern": "##.########",
+          "mainSeriesProperties.priceFormat.useFixedPrecision": true,
+          "scalesProperties.showRightScale": true,
+          "paneProperties.rightMargin": 12,
+          "scalesProperties.fontSize": 10,
+          "scalesProperties.position": "right",
+          "paneProperties.legendProperties.showLegend": true,
+          "paneProperties.legendProperties.showSeriesTitle": false,
+          "paneProperties.legendProperties.showSeriesOHLC": true,
+          "paneProperties.legendProperties.position": "right",
+          "scalesProperties.placeLabelsToTheRight": true,
+          "paneProperties.legendProperties.showSeriesVolume": true,
+          "chartProperties.leftMargin": 12,
+          "chartProperties.rightMargin": 12,
+          "timeScale.rightOffset": 12,
+          "timeScale.barSpacing": 6,
+          "timeScale.fixLeftEdge": true,
+          "timeScale.lockVisibleTimeRangeOnResize": true,
+        },
+        interval: "1" as ResolutionString,
+        timeframe: {
+          from: Math.floor(Date.now() / 1000) - (60 * 60 * 12 * 1),
+          to: Math.floor(Date.now() / 1000),
+        },
         // studies_overrides: {},
         // saved_data: null,
       };
 
       tvWidgetRef.current = new widget(widgetOptions);
       tvWidgetRef.current.onChartReady(function () {
+        // tvWidgetRef.current?.activeChart().executeActionById('timeScaleReset');
+        // Get the active chart instance
+        const chart = tvWidgetRef.current?.activeChart();
+        
+        // Apply series properties
+        chart?.applyOverrides({
+          "mainSeriesProperties.priceLineColor": "#26a69a",  // Changed to green
+          "mainSeriesProperties.priceLineWidth": 1,
+          "mainSeriesProperties.priceLineStyle": 0,
+        });
+
+        // Set the chart type to candlesticks
+        chart?.setChartType(1); // 1 is for candlesticks
+
+        chart?.executeActionById('timeScaleReset');
         setIsLoading(false);
       });
 
