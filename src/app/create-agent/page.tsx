@@ -28,6 +28,7 @@ import { toast } from "sonner";
 import api from "@/lib/axios";
 import { Coin } from "../../../type";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/providers/Auth";
 
 const formSchema = z.object({
   name: z
@@ -75,6 +76,7 @@ const formSchema = z.object({
 function Page() {
   const [loading, setLoading] = useState(false);
   const { push } = useRouter();
+  const { isAuthenticated } = useAuth();
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -92,6 +94,7 @@ function Page() {
   });
   const image = form.watch("image");
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!isAuthenticated) return toast.error("Connect Wallet");
     try {
       setLoading(true);
       const formData = new FormData();
@@ -156,6 +159,7 @@ function Page() {
                         </label>
                         <FormControl>
                           <input
+                            disabled={loading}
                             className="sr-only"
                             id="image-url"
                             type="file"
@@ -179,9 +183,13 @@ function Page() {
                     name="name"
                     render={({ field }) => (
                       <FormItem className="flex-1">
-                        <FormLabel> Name</FormLabel>
+                        <FormLabel>Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="FATBOY" {...field} />
+                          <Input
+                            placeholder="FATBOY"
+                            {...field}
+                            disabled={loading}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -194,7 +202,11 @@ function Page() {
                       <FormItem>
                         <FormLabel>Ticker</FormLabel>
                         <FormControl>
-                          <Input placeholder="FATBOY" {...field} />
+                          <Input
+                            placeholder="FATBOY"
+                            {...field}
+                            disabled={loading}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -215,6 +227,7 @@ e.g. I’m a physicist who’s curious about how the universe works.
 What’s their backstory? What information should they know about themselves?`}
                           id="description"
                           {...field}
+                          disabled={loading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -234,6 +247,7 @@ What’s their backstory? What information should they know about themselves?`}
 Angry, Cheerful, Psychotic,
 Drunk, Indifferent, Wholesome`}
                           {...field}
+                          disabled={loading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -254,6 +268,7 @@ Should they use emojis?
 Any no-go topics?
 Should they make things up?`}
                           {...field}
+                          disabled={loading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -298,6 +313,7 @@ Any no-go topics?
 Should they make things up?`}
                           id="kn"
                           {...field}
+                          disabled={loading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -312,7 +328,11 @@ Should they make things up?`}
                       <FormItem>
                         <FormLabel>Twitter</FormLabel>
                         <FormControl>
-                          <Input placeholder="https://x.com/test" {...field} />
+                          <Input
+                            placeholder="https://x.com/test"
+                            {...field}
+                            disabled={loading}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -326,7 +346,11 @@ Should they make things up?`}
                       <FormItem>
                         <FormLabel>Telegram</FormLabel>
                         <FormControl>
-                          <Input placeholder="FATBOY" {...field} />
+                          <Input
+                            placeholder="FATBOY"
+                            {...field}
+                            disabled={loading}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -339,7 +363,11 @@ Should they make things up?`}
                       <FormItem>
                         <FormLabel>Website</FormLabel>
                         <FormControl>
-                          <Input placeholder="https://cyber.app" {...field} />
+                          <Input
+                            placeholder="https://cyber.app"
+                            {...field}
+                            disabled={loading}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -354,6 +382,7 @@ Should they make things up?`}
                 loading={loading}
                 loadingText="Creating..."
                 size="lg"
+                disabled={loading}
               >
                 Launch Token
               </Button>
