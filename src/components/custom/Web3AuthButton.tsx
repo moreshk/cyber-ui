@@ -66,7 +66,11 @@ const Web3AuthButton = () => {
             : "Connect"}
         </Button>
       ) : (
-        <WalletMultiButton style={{}} />
+        <WalletMultiButton
+          style={{
+            background: "#21E786",
+          }}
+        />
       )}
     </div>
   );

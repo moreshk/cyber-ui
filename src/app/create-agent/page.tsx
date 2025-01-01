@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ImageUp } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/axios";
 import { Coin } from "../../../type";
@@ -36,9 +36,14 @@ const formSchema = z.object({
       message: "Min character 2",
     })
     .max(20, "max changes 20"),
-  symbol: z.string().min(2, {
-    message: "Min character 2",
-  }),
+  symbol: z
+    .string()
+    .min(2, {
+      message: "Min character 2",
+    })
+    .max(5, {
+      message: "Min character 5",
+    }),
   description: z.string().min(2, {
     message: "Min character 2",
   }),
@@ -118,79 +123,88 @@ function Page() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="flex justify-center items-center py-10">
-          <Card className="max-w-xl w-full">
+        <div className="flex justify-center items-center">
+          <Card className="max-w-2xl w-full">
             <CardHeader>
               <CardTitle className="text-center text-3xl">
-                Create Agent & token
+                Launch Cyber
               </CardTitle>
-              <CardDescription className="text-center text-secondary-foreground">
+              <CardDescription className="text-center">
                 Don’t worry — you can edit it in the future
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="image"
-                render={({ field }) => (
-                  <>
-                    <FormItem>
-                      <FormLabel>Upload Image</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="file"
-                          accept="image/jpeg,image/png,image/webp"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              field.onChange(file);
-                            }
-                          }}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                    {image && (
-                      <div className="mt-4">
-                        <p className="text-sm text-gray-500">Image Preview:</p>
-                        <img
-                          src={URL.createObjectURL(image)}
-                          alt="Preview"
-                          className="mt-2 h-32 w-32 rounded border"
-                        />
-                      </div>
-                    )}
-                  </>
-                )}
-              />
-
               <div className="space-y-2">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Cyber (Agent) Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="FATBOY" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="symbol"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Token Symbol</FormLabel>
-                      <FormControl>
-                        <Input placeholder="FATBOY" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="flex justify-center items-center w-28 h-28 bg-basePrimary rounded-full mx-auto">
+                  <FormField
+                    control={form.control}
+                    name="image"
+                    render={({ field }) => (
+                      <>
+                        <FormItem>
+                          <label htmlFor="image-url">
+                            <ImageUp className="w-10 h-10 text-baseSecondary" />
+                          </label>
+                          <FormControl>
+                            <input
+                              className="sr-only"
+                              id="image-url"
+                              type="file"
+                              accept="image/jpeg,image/png,image/webp"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  field.onChange(file);
+                                }
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                        {image && (
+                          <div className="mt-4">
+                            <p className="text-sm text-gray-500">
+                              Image Preview:
+                            </p>
+                            <img
+                              src={URL.createObjectURL(image)}
+                              alt="Preview"
+                              className="mt-2 h-32 w-32 rounded border"
+                            />
+                          </div>
+                        )}
+                      </>
+                    )}
+                  />
+                </div>
+                <div className="flex gap-4">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel> Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="FATBOY" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="symbol"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Ticker</FormLabel>
+                        <FormControl>
+                          <Input placeholder="FATBOY" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 <FormField
                   control={form.control}
                   name="description"
@@ -259,18 +273,18 @@ Should they make things up?`}
                 onClick={() => {
                   setShowMoreOptions(!showMoreOptions);
                 }}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-basePrimary font-bold"
               >
                 More options{" "}
                 <ChevronDown
-                  className={`w-4 h-4 text-secondary-foreground ${
+                  className={`w-4 h-4 text-basePrimary font-bold ${
                     showMoreOptions ? "" : "rotate-180"
                   }`}
                 />
               </button>
               <div
                 className={
-                  showMoreOptions ? "block space-y-2" : "hidden space-y-2"
+                  showMoreOptions ? "block space-y-10" : "hidden space-y-2"
                 }
               >
                 <FormField
@@ -294,56 +308,58 @@ Should they make things up?`}
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="twitter"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Twitter</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://x.com/test" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="flex gap-3">
+                  <FormField
+                    control={form.control}
+                    name="twitter"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Twitter</FormLabel>
+                        <FormControl>
+                          <Input placeholder="https://x.com/test" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                <FormField
-                  control={form.control}
-                  name="telegram"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Telegram</FormLabel>
-                      <FormControl>
-                        <Input placeholder="FATBOY" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="website"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Website</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://cyber.app" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                  <FormField
+                    control={form.control}
+                    name="telegram"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Telegram</FormLabel>
+                        <FormControl>
+                          <Input placeholder="FATBOY" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="website"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Website</FormLabel>
+                        <FormControl>
+                          <Input placeholder="https://cyber.app" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
             </CardContent>
             <CardFooter className="flex justify-between w-full">
               <Button
+                className="w-full"
                 loading={loading}
                 loadingText="Creating..."
-                className="w-full rounded-xl"
                 size="lg"
               >
-                Create Agent
+                Launch Token
               </Button>
             </CardFooter>
           </Card>
