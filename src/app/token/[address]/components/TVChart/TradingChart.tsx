@@ -27,6 +27,7 @@ export const TradingChart = () => {
           name={data?.name || ""}
           pairIndex={10}
           token={data?.name || ""}
+          mintAddress={data?.mintAddress || ""}
         />
       )}
     </>

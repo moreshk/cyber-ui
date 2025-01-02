@@ -32,6 +32,7 @@ export type TVChartContainerProps = {
   name: string;
   pairIndex: number;
   token: string;
+  mintAddress: string;
   classNames?: {
     container: string;
   };
@@ -40,7 +41,8 @@ export type TVChartContainerProps = {
 // Add this outside the component to cache the data
 const dataCache = new Map<string, Bar[]>();
 
-const mockDataFeed: ChartingLibraryWidgetOptions["datafeed"] = {
+// Modify mockDataFeed to accept token parameter
+const createDataFeed = (mintAddress: string): ChartingLibraryWidgetOptions["datafeed"] => ({
   onReady: (callback) => {
     setTimeout(() => {
       callback({
@@ -187,9 +189,9 @@ const mockDataFeed: ChartingLibraryWidgetOptions["datafeed"] = {
       // ==========================
 
       // ==========================
-      console.log('symbolInfo')
+      console.log('mintAddress', mintAddress)
       const response = await api.get<GraphDetails[]>(
-        `/v1/token/ohlc?token=${"7d7XnCD4ZJ9LmCG9CazMzuV7E2CXLyXNDh1PUPigAUhM"}`
+        `/v1/token/ohlc?token=${mintAddress}`
       );
       const chartData = response.data
         .filter((item: any) => {
@@ -257,7 +259,7 @@ const mockDataFeed: ChartingLibraryWidgetOptions["datafeed"] = {
   getServerTime: (callback) => {
     callback(Math.floor(Date.now() / 1000)); // Return current timestamp in seconds
   },
-};
+});
 
 // Add this function to clean up old cache entries
 const cleanupCache = () => {
@@ -279,6 +281,7 @@ export const TVChartContainer = ({
   name,
   pairIndex,
   token,
+  mintAddress,
 }: TVChartContainerProps) => {
   const chartContainerRef = useRef<HTMLDivElement>(
     null
@@ -299,7 +302,7 @@ export const TVChartContainer = ({
       const widgetOptions: ChartingLibraryWidgetOptions = {
         symbol: name,
         debug: false,
-        datafeed: mockDataFeed,
+        datafeed: createDataFeed(mintAddress),
         theme: "dark",
         locale: "en",
         container: elem,
@@ -385,7 +388,7 @@ export const TVChartContainer = ({
         }
       };
     }
-  }, [name, pairIndex]);
+  }, [name, pairIndex, token]);
 
   return (
     <div className="relative mb-[1px] h-[600px] w-full ">
