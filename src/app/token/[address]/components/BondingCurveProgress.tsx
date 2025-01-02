@@ -17,7 +17,7 @@ const BondingCurveProgress = () => {
   const [reserves, setReserves] = useState<
     | {
         reserveOne: number;
-        reserveTow: number;
+        reserveTwo: number;
       }
     | undefined
   >();
@@ -25,7 +25,7 @@ const BondingCurveProgress = () => {
     try {
       const { data: response } = await api.get<{
         reserveOne: number;
-        reserveTow: number;
+        reserveTwo: number;
       }>(`/v1/token/reserves?token=${data?.mintAddress}`);
       setReserves(response);
       if (reserves && +reserves?.reserveOne < 400_000_000) {
@@ -66,7 +66,7 @@ const BondingCurveProgress = () => {
           <p className="text-gray-400 mt-2">
             graduate this coin to raydium at $77,628 market cap.
             <br />
-            there is {(+reserves.reserveTow - 30).toFixed(2)} SOL in the bonding
+            there is {(+reserves.reserveTwo - 30).toFixed(2)} SOL in the bonding
             curve.
           </p>
         </div>
