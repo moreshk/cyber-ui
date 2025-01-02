@@ -1,9 +1,11 @@
 import api from "@/lib/axios";
+import useSolPriceStore from "@/store/useSolPrice";
 import useTokenDetailsStore from "@/store/useTokenDetailsStore";
 import { useEffect, useState } from "react";
 
 const MarketCap = () => {
   const { data } = useTokenDetailsStore();
+  const { solPrice } = useSolPriceStore();
   const [reserves, setReserves] = useState<
     | {
         reserveOne: number;
@@ -30,9 +32,14 @@ const MarketCap = () => {
   return (
     <div className="text-right">
       <p>Market Cap</p>
-      {reserves && (
+      {reserves && solPrice && (
         <p className="text-[#71BB44] font-bold text-xl">
-          ${(reserves.reserveTwo / reserves.reserveOne) * 1000000000}
+          $
+          {(
+            (reserves.reserveTwo / reserves.reserveOne) *
+            1000000000 *
+            solPrice
+          ).toFixed(2)}
         </p>
       )}
     </div>

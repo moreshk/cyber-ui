@@ -27,11 +27,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useTokenGraphDetailsStore from "@/store/useTokenGraphDetailsStore";
 import MarketCap from "./components/MarketCap";
 import ContractAddress from "./components/ContractAddress";
+import useSolPriceStore from "@/store/useSolPrice";
 
 dayjs.extend(relativeTime);
 
 const Page = () => {
   const { address } = useParams() as { address: string };
+  const { fetchSolPrice } = useSolPriceStore();
   const { fetchTokens, data, isLoading } = useTokenDetailsStore();
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
@@ -54,6 +56,7 @@ const Page = () => {
   useEffect(() => {
     fetchTokens(address);
     fetchTokenGraph(address);
+    fetchSolPrice();
   }, []);
 
   if (isLoading || !data || fetchTokenGraphLoading || !tokenGraph) {
