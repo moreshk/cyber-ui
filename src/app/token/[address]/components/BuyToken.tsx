@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import api from "@/lib/axios";
 import { swapTx } from "@/lib/web3";
@@ -103,7 +102,7 @@ const BuyToken = () => {
             txHash: signature,
           });
           setLoading(false);
-          toast("Event has been created", {
+          toast("Transaction Success", {
             action: {
               actionButtonStyle: {
                 background: "black",
@@ -129,61 +128,58 @@ const BuyToken = () => {
   };
 
   return (
-    <div>
-      <Card>
-        <CardContent className="space-y-2 pt-3">
-          <div className="space-y-1">
-            <div>
-              <Label htmlFor="username">Amount in (SOL)</Label>
-              <p className="text-sm text-gray-500">
-                Available Balance: {balance.toFixed(2) || "-"} (Sol)
-              </p>
-            </div>
-            <Input
-              value={amount}
-              onChange={(e) => {
-                handleAmountChange(e.target.value);
-              }}
-              placeholder="0.1"
-            />
-          </div>
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleAmountChange("")}
-            >
-              reset
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleQuickAmount("0.1")}
-            >
-              0.1 SOL
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleQuickAmount("0.5")}
-            >
-              0.5 SOL
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleQuickAmount("1")}
-            >
-              1 SOL
-            </Button>
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button onClick={swap} loading={loading} className="w-full" size="lg">
-            Please Trade
-          </Button>
-        </CardFooter>
-      </Card>
+    <div className="space-y-5">
+      <div className="pt-4">
+        <Label htmlFor="username">Amount in (SOL)</Label>
+        <p className="text-sm text-gray-500">
+          Available Balance: {balance.toFixed(2) || "-"} (Sol)
+        </p>
+      </div>
+      <Input
+        value={amount}
+        onChange={(e) => {
+          handleAmountChange(e.target.value);
+        }}
+        placeholder="0.1"
+      />
+      <div className="flex gap-2">
+        <Button
+          className="bg-baseSecondary"
+          size="sm"
+          variant="outline"
+          onClick={() => handleAmountChange("")}
+        >
+          reset
+        </Button>
+        <Button
+          className="bg-baseSecondary"
+          size="sm"
+          variant="outline"
+          onClick={() => handleQuickAmount("0.1")}
+        >
+          0.1 SOL
+        </Button>
+        <Button
+          className="bg-baseSecondary"
+          size="sm"
+          variant="outline"
+          onClick={() => handleQuickAmount("0.5")}
+        >
+          0.5 SOL
+        </Button>
+        <Button
+          className="bg-baseSecondary"
+          size="sm"
+          variant="outline"
+          onClick={() => handleQuickAmount("1")}
+        >
+          1 SOL
+        </Button>
+      </div>
+
+      <Button onClick={swap} loading={loading} className="w-full" size="lg">
+        Please Trade
+      </Button>
     </div>
   );
 };

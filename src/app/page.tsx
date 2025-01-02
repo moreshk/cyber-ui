@@ -18,7 +18,7 @@ dayjs.extend(relativeTime);
 export default function Home() {
   const { data, isLoading, fetchTokens } = useTokenStore();
   const { data: kingOfTheHill } = useSWR<Coin>("/v1/token/king-of-the-hill");
-  console.log(data);
+
   useEffect(() => {
     fetchTokens();
   }, []);

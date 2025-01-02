@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import api from "@/lib/axios";
 
-interface GraphDetails {
+export interface GraphDetails {
   id: number;
   updatedAt: Date | null;
   createdAt: Date | null;

@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import api from "@/lib/axios";
 import { swapTx } from "@/lib/web3";
@@ -101,61 +100,57 @@ const SellToken = () => {
   };
 
   return (
-    <div>
-      <Card>
-        <CardContent className="space-y-2 pt-3">
-          <div className="space-y-1">
-            <div className="flex justify-between items-center">
-              <Label htmlFor="amount">Amount in ({data?.name})</Label>
-              <p className="text-sm text-gray-500">
-                {balance.toFixed(2) || "-"} {data?.name}
-              </p>
-            </div>
-            <Input
-              value={amount}
-              onChange={(e) => {
-                handleAmountChange(e.target.value);
-              }}
-              placeholder="1253"
-            />
-          </div>
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleAmountChange("")}
-            >
-              Reset
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleQuickAmount(25)}
-            >
-              25%
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleQuickAmount(50)}
-            >
-              50%
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleQuickAmount(100)}
-            >
-              100%
-            </Button>
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button onClick={swap} loading={loading} className="w-full" size="lg">
-            Swap Tokens
-          </Button>
-        </CardFooter>
-      </Card>
+    <div className="space-y-5 pt-4">
+      <div className="flex justify-between items-center">
+        <Label htmlFor="amount">Amount in ({data?.name})</Label>
+        <p className="text-sm text-gray-500">
+          {balance.toFixed(2) || "-"} {data?.name}
+        </p>
+      </div>
+      <Input
+        value={amount}
+        onChange={(e) => {
+          handleAmountChange(e.target.value);
+        }}
+        placeholder="1253"
+      />
+      <div className="flex gap-2">
+        <Button
+          className="bg-baseSecondary"
+          size="sm"
+          variant="outline"
+          onClick={() => handleAmountChange("")}
+        >
+          Reset
+        </Button>
+        <Button
+          className="bg-baseSecondary"
+          size="sm"
+          variant="outline"
+          onClick={() => handleQuickAmount(25)}
+        >
+          25%
+        </Button>
+        <Button
+          className="bg-baseSecondary"
+          size="sm"
+          variant="outline"
+          onClick={() => handleQuickAmount(50)}
+        >
+          50%
+        </Button>
+        <Button
+          className="bg-baseSecondary"
+          size="sm"
+          variant="outline"
+          onClick={() => handleQuickAmount(100)}
+        >
+          100%
+        </Button>
+      </div>
+      <Button onClick={swap} loading={loading} className="w-full" size="lg">
+        Sell Tokens
+      </Button>
     </div>
   );
 };

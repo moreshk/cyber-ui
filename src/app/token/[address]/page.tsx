@@ -10,23 +10,23 @@ import {
 } from "next/navigation";
 import { useCallback, useEffect } from "react";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { first4Characters, truncateAddress } from "@/lib/utils";
+import { first4Characters } from "@/lib/utils";
 import Avatar from "boring-avatars";
 import Chart from "./components/chart";
 import WSTokenDetails from "./components/WSTokenDetails";
 import Swap from "./components/Swap";
 import { Badge } from "@/components/ui/badge";
 import { FaTelegram } from "react-icons/fa";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { CommentInput } from "./components/commentInput";
 import ExistingHolders from "./components/ExistingHolders";
 import BondingCurveProgress from "./components/BondingCurveProgress";
 import BuyCredits from "./components/BuyCredits";
 import TxList from "./components/TxList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import api from "@/lib/axios";
-import { toast } from "sonner";
 import useTokenGraphDetailsStore from "@/store/useTokenGraphDetailsStore";
+import MarketCap from "./components/MarketCap";
+import ContractAddress from "./components/ContractAddress";
 
 dayjs.extend(relativeTime);
 
@@ -60,28 +60,14 @@ const Page = () => {
     <div>Loading</div>;
   }
 
-  console.log(tokenGraph);
-
   if (data) {
     return (
       <div className="max-w-7xl mx-auto">
-        <div className="border rounded-xl mt-6 p-6">
-          <Button
-            onClick={async () => {
-              try {
-                await api.get(`/v1/token/migration?token=${data.mintAddress}`);
-              } catch (e) {
-                console.log(e);
-                toast.error("error migraing");
-              }
-            }}
-          >
-            Migration
-          </Button>
+        <div className="mt-6 p-6">
           <div key={data.mintAddress} className="flex gap-2">
             <img
               src={data.imgUrl}
-              className="w-32 h-32 border rounded-lg"
+              className="w-32 h-32"
               width={128}
               height={128}
               alt="token image"
@@ -132,18 +118,8 @@ const Page = () => {
                   <p className="text-sm opacity-65 w-80">{data.description}</p>
                   <div className="flex justify-between w-full">
                     <div className="flex justify-between items-center gap-5">
-                      <div className="text-right">
-                        <p>Market Cap</p>
-                        <p className="text-[#71BB44] font-bold text-xl">
-                          $10,532,004
-                        </p>
-                      </div>
-                      <div className="gap-2 text-right">
-                        <p>Contract</p>
-                        <p className="text-xl font-bold">
-                          {truncateAddress(data.mintAddress)}
-                        </p>
-                      </div>
+                      <MarketCap />
+                      <ContractAddress />
                       <div className=" gap-2 text-right">
                         <p>Credits Consumed</p>
                         <p className="text-xl font-bold">
@@ -163,12 +139,12 @@ const Page = () => {
                           width={24}
                           variant="pixel"
                         />
-                        <p className="bg-[#F9BF85] text-sm text-black rounded-2xl text-center py-1 px-2">
+                        <p className="bg-baseSecondary text-sm text-white font-medium rounded-2xl text-center py-1 px-2">
                           {data.creatorWalletAddress.slice(0, 4)}
                         </p>
                       </div>
                       <button
-                        className="text-sm font-bold bg-[#8066BD] py-1 px-2 rounded-3xl"
+                        className="text-sm bg-basePrimary text-baseSecondary py-1 px-2 rounded-3xl font-bold"
                         onClick={() =>
                           router.push(
                             pathname +
@@ -191,7 +167,7 @@ const Page = () => {
               <></>
               <div className="pt-9">
                 <Tabs defaultValue="comment">
-                  <TabsList className="grid w-full grid-cols-2">
+                  <TabsList className="grid w-72 grid-cols-2">
                     <TabsTrigger value="comment">Thread</TabsTrigger>
                     <TabsTrigger value="tx">Trades</TabsTrigger>
                   </TabsList>
@@ -212,7 +188,7 @@ const Page = () => {
                       {data.comments.map((comment) => (
                         <div
                           key={comment.id}
-                          className="bg-gray-100 rounded-lg p-4"
+                          className="bg-baseSecondary rounded-lg p-4"
                         >
                           <div className="flex gap-2">
                             <Avatar

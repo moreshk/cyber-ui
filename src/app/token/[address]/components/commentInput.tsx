@@ -39,7 +39,7 @@ export function CommentInput() {
     <div>
       <Button onClick={() => setOpen(true)}>Post Reply</Button>
       <Dialog open={open} onOpenChange={(value: boolean) => setOpen(value)}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] bg-baseSecondary border-none">
           <DialogHeader>
             <DialogTitle>Add a comment</DialogTitle>
           </DialogHeader>
