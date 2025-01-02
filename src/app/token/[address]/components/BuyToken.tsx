@@ -62,7 +62,10 @@ const BuyToken = () => {
         tx.sign(mint);
         const signedTransaction = await signTransaction(tx);
         const signature = await connection.sendRawTransaction(
-          signedTransaction.serialize()
+          signedTransaction.serialize(),
+          {
+            skipPreflight: true,
+          }
         );
         await api.post<{ serializedTransaction: string }>("/v1/coin/minted", {
           token: data.mintAddress,
@@ -72,6 +75,7 @@ const BuyToken = () => {
           type: "buy",
           token: data.mintAddress,
           txHash: signature,
+          isInitial: true,
         });
         setLoading(false);
         toast.error("Congratulations you are the first person to buy");
@@ -91,13 +95,11 @@ const BuyToken = () => {
           swap.recentBlockhash = blockhash;
           swap.feePayer = publicKey;
           const signedTransaction = await signTransaction(swap);
-
           const rawTransaction = signedTransaction.serialize();
-
           const signature = await connection.sendRawTransaction(
             rawTransaction,
             {
-              skipPreflight: false, // Optional: Skip preflight checks if you trust the transaction
+              skipPreflight: false,
             }
           );
           await connection.confirmTransaction(signature, "finalized");
