@@ -121,17 +121,36 @@ const mockDataFeed: ChartingLibraryWidgetOptions["datafeed"] = {
       // Convert resolution to API format if needed
       const apiResolution = resolution === "1D" ? "1440" : resolution;
       
-      const response = await axios.get(`/api/candlesticks`, {
-        params: {
-          // token: 'twzY8ahJ8FEtc7db81ZrPrVwxzHu7WXGcmEKXXtpump',
-          token: '2wWWiDvxPuLrkMMRF5fvjskxf91GXN6nppukAgF2cVnv',
-          from: extendedFrom,
-          to,
-          resolution: apiResolution
-        }
-      });
+      // const response = await axios.get(`/api/candlesticks`, {
+      //   params: {
+      //     // token: 'twzY8ahJ8FEtc7db81ZrPrVwxzHu7WXGcmEKXXtpump',
+      //     // token: '2wWWiDvxPuLrkMMRF5fvjskxf91GXN6nppukAgF2cVnv',
+      //     token: '7yY7aQjmTzUe9mZCUHiCPs8ZTcyx41ucoxFjHdGrpump',
+      //     from: extendedFrom,
+      //     to,
+      //     resolution: apiResolution
+      //   }
+      // });
 
-      const chartData = response.data;
+      // const chartData = response.data;
+
+      const response = await api.get<GraphDetails[]>(
+        `/v1/token/ohlc?token=${"FH7vPw241wjUkCugaLZN9HFxL6VzuCkyeYg5f34Q4bDg"}`
+      );
+
+      const chartData = response.data
+        .filter((item: any) => {
+          return item.unix_timestamp >= from && item.unix_timestamp <= to;
+        })
+        .map((bar) => ({
+          close: parseFloat(bar.close),
+          open: parseFloat(bar.open),
+          high: parseFloat(bar.high),
+          low: parseFloat(bar.low),
+          time: Math.floor(bar.unix_timestamp) * 1000,
+          volume: parseFloat(bar.volume),
+        })) as Bar[];
+
       
       if (!chartData || chartData.length === 0) {
         onHistoryCallback([], { 
@@ -273,13 +292,14 @@ export const TVChartContainer = ({
           "timeScale.rightOffset": 12,
           "timeScale.barSpacing": 6,
           "timeScale.fixLeftEdge": true,
-          "timeScale.lockVisibleTimeRangeOnResize": true,
+          // "timeScale.lockVisibleTimeRangeOnResize": true,
         },
-        interval: "1" as ResolutionString,
+        interval: "5" as ResolutionString,
         timeframe: {
-          from: Math.floor(Date.now() / 1000) - (60 * 60 * 12 * 1),
+          from: Math.floor(Date.now() / 1000) - (60 * 60 * 24 * 2),
           to: Math.floor(Date.now() / 1000),
         },
+        // timeframe: "2D",
         // studies_overrides: {},
         // saved_data: null,
       };
@@ -293,6 +313,7 @@ export const TVChartContainer = ({
         // Apply series properties
         chart?.applyOverrides({
           "mainSeriesProperties.priceLineColor": "#26a69a",  // Changed to green
+          "mainSeriesProperties.priceAxisProperties.autoScale": true,
           "mainSeriesProperties.priceLineWidth": 1,
           "mainSeriesProperties.priceLineStyle": 0,
         });
