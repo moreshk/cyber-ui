@@ -27,6 +27,7 @@ import {
 import axios from "axios";
 import api from "@/lib/axios";
 import { GraphDetails } from "@/store/useTokenGraphDetailsStore";
+import ReconnectingWebSocket from "reconnecting-websocket";
 
 export type TVChartContainerProps = {
   name: string;
@@ -42,7 +43,9 @@ export type TVChartContainerProps = {
 const dataCache = new Map<string, Bar[]>();
 
 // Modify mockDataFeed to accept token parameter
-const createDataFeed = (mintAddress: string): ChartingLibraryWidgetOptions["datafeed"] => ({
+const createDataFeed = (
+  mintAddress: string
+): ChartingLibraryWidgetOptions["datafeed"] => ({
   onReady: (callback) => {
     setTimeout(() => {
       callback({
@@ -112,19 +115,19 @@ const createDataFeed = (mintAddress: string): ChartingLibraryWidgetOptions["data
       // Check cache
       if (dataCache.has(cacheKey)) {
         const cachedData = dataCache.get(cacheKey)!;
-        onHistoryCallback(cachedData, { 
+        onHistoryCallback(cachedData, {
           noData: cachedData.length === 0,
-          nextTime: cachedData.length > 0 ? cachedData[0].time : undefined 
+          nextTime: cachedData.length > 0 ? cachedData[0].time : undefined,
         });
         return;
       }
 
       // Calculate extended range
-      const extendedFrom = from - (countBack * 2);
-      
+      const extendedFrom = from - countBack * 2;
+
       // Convert resolution to API format if needed
       const apiResolution = resolution === "1D" ? "1440" : resolution;
-      
+
       // ==========================
       // const response = await axios.get(`/api/candlesticks`, {
       //   params: {
@@ -189,10 +192,11 @@ const createDataFeed = (mintAddress: string): ChartingLibraryWidgetOptions["data
       // ==========================
 
       // ==========================
-      console.log('mintAddress', mintAddress)
+      console.log("mintAddress", mintAddress);
       const response = await api.get<GraphDetails[]>(
         `/v1/token/ohlc?token=${mintAddress}`
       );
+
       const chartData = response.data
         .filter((item: any) => {
           return item.unixTimestamp >= from && item.unixTimestamp <= to;
@@ -207,26 +211,23 @@ const createDataFeed = (mintAddress: string): ChartingLibraryWidgetOptions["data
         })) as Bar[];
       // ==========================
 
-      
       if (!chartData || chartData.length === 0) {
-        onHistoryCallback([], { 
+        onHistoryCallback([], {
           noData: true,
-          nextTime: undefined
+          nextTime: undefined,
         });
         return;
       }
 
-      const bars: Bar[] = chartData
-        .sort((a: Bar, b: Bar) => a.time - b.time);
+      const bars: Bar[] = chartData.sort((a: Bar, b: Bar) => a.time - b.time);
 
       // Cache the data
       dataCache.set(cacheKey, bars);
 
-      onHistoryCallback(bars, { 
+      onHistoryCallback(bars, {
         noData: false,
-        nextTime: bars.length > 0 ? bars[0].time : undefined
+        nextTime: bars.length > 0 ? bars[0].time : undefined,
       });
-
     } catch (error) {
       console.error("Error in getBars:", error);
       onErrorCallback("Error fetching bars");
@@ -239,19 +240,34 @@ const createDataFeed = (mintAddress: string): ChartingLibraryWidgetOptions["data
     subscriberUID,
     onResetCacheNeededCallback
   ) => {
-    const interval = setInterval(() => {
-      // const bar: Bar = {
-      //   time: Date.now(), // 1623456789*1000
-      //   open: 100,
-      //   high: 120,
-      //   low: 90,
-      //   close: 110,
-      //   volume: 1200,
-      // };
-      // onRealtimeCallback(bar);
-    }, 5000);
+    let heartbeat: any;
+    const rws = new ReconnectingWebSocket(async () => {
+      return `${process.env.NEXT_PUBLIC_WS_URL}/v1/g/${mintAddress}`;
+    });
+    rws.onopen = () => {
+      heartbeat = setInterval(() => {
+        rws.send("ping");
+      }, 3000);
+    };
+    rws.onmessage = (event) => {
+      if (event.data === "pong") {
+        return;
+      }
+      const data = JSON.parse(event.data);
+      if (data.event === "new-tx") {
+        const details = data.value;
+        onRealtimeCallback({
+          close: parseFloat(details.close),
+          open: parseFloat(details.open),
+          high: parseFloat(details.high),
+          low: parseFloat(details.low),
+          time: Math.floor(details.unixTimestamp) * 1000,
+          volume: parseFloat(details.volume),
+        });
+      }
+    };
 
-    return () => clearInterval(interval);
+    return () => clearInterval(heartbeat);
   },
   unsubscribeBars: (subscriberUID) => {
     // Handle unsubscribing logic if necessary
@@ -265,9 +281,9 @@ const createDataFeed = (mintAddress: string): ChartingLibraryWidgetOptions["data
 const cleanupCache = () => {
   const now = Date.now();
   const maxAge = 30 * 60 * 1000; // 30 minutes
-  
+
   dataCache.forEach((value, key) => {
-    const [, , timestamp] = key.split('-');
+    const [, , timestamp] = key.split("-");
     if (now - Number(timestamp) > maxAge) {
       dataCache.delete(key);
     }
@@ -288,7 +304,7 @@ export const TVChartContainer = ({
   ) as React.MutableRefObject<HTMLInputElement>;
   const tvWidgetRef = useRef<IChartingLibraryWidget | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   useEffect(() => {
     if (!chartContainerRef.current) {
       return () => {};
@@ -313,14 +329,15 @@ export const TVChartContainer = ({
         },
         enabled_features: enabledFeatures,
         disabled_features: [
-          ...disabledFeatures.filter(feature => 
-            feature !== 'hide_right_scale' && 
-            feature !== 'header_symbol_search' &&
-            feature !== 'header_settings'
+          ...disabledFeatures.filter(
+            (feature) =>
+              feature !== "hide_right_scale" &&
+              feature !== "header_symbol_search" &&
+              feature !== "header_settings"
           ),
-          'future_data',
-          'go_to_date',
-          'time_scale_right_margin',
+          "future_data",
+          "go_to_date",
+          "time_scale_right_margin",
         ],
         client_id: "tradingview.com",
         user_id: "public_user_id",
@@ -353,7 +370,7 @@ export const TVChartContainer = ({
         },
         interval: "60" as ResolutionString,
         timeframe: {
-          from: Math.floor(Date.now() / 1000) - (60 * 60 * 24 * 5),
+          from: Math.floor(Date.now() / 1000) - 60 * 60 * 24 * 5,
           to: Math.floor(Date.now() / 1000),
         },
         // timeframe: "2D",
@@ -366,10 +383,10 @@ export const TVChartContainer = ({
         // tvWidgetRef.current?.activeChart().executeActionById('timeScaleReset');
         // Get the active chart instance
         const chart = tvWidgetRef.current?.activeChart();
-        
+
         // Apply series properties
         chart?.applyOverrides({
-          "mainSeriesProperties.priceLineColor": "#26a69a",  // Changed to green
+          "mainSeriesProperties.priceLineColor": "#26a69a", // Changed to green
           "mainSeriesProperties.priceAxisProperties.autoScale": true,
           "mainSeriesProperties.priceLineWidth": 1,
           "mainSeriesProperties.priceLineStyle": 0,
@@ -378,7 +395,7 @@ export const TVChartContainer = ({
         // Set the chart type to candlesticks
         chart?.setChartType(1); // 1 is for candlesticks
 
-        chart?.executeActionById('timeScaleReset');
+        chart?.executeActionById("timeScaleReset");
         setIsLoading(false);
       });
 
