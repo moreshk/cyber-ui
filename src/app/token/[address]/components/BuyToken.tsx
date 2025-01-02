@@ -68,6 +68,11 @@ const BuyToken = () => {
           token: data.mintAddress,
           tx: signature,
         });
+        await api.post("/v1/coin/tx", {
+          type: "buy",
+          token: data.mintAddress,
+          txHash: signature,
+        });
         setLoading(false);
         toast.error("Congratulations you are the first person to buy");
       } catch (e: any) {
@@ -96,7 +101,7 @@ const BuyToken = () => {
             }
           );
           await connection.confirmTransaction(signature, "finalized");
-          await api.post("/v1/coin/tx", {
+          const res = await api.post("/v1/coin/tx", {
             type: "buy",
             token: data.mintAddress,
             txHash: signature,
@@ -119,6 +124,7 @@ const BuyToken = () => {
               },
             },
           });
+          console.log("swap response: ", res);
         }
       } catch (e: any) {
         toast.error(e.message);
