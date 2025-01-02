@@ -25,6 +25,8 @@ import {
   PeriodParams,
 } from "@/libraries/charting_library";
 import axios from "axios";
+import api from "@/lib/axios";
+import { GraphDetails } from "@/store/useTokenGraphDetailsStore";
 
 export type TVChartContainerProps = {
   name: string;
@@ -51,7 +53,7 @@ const mockDataFeed: ChartingLibraryWidgetOptions["datafeed"] = {
           "5",
           // "15",
           // "30",
-          // "60",
+          "60",
           // "120",
           // "240",
           // "1D",
@@ -85,7 +87,7 @@ const mockDataFeed: ChartingLibraryWidgetOptions["datafeed"] = {
           "5",
           // "15",
           // "30",
-          // "60",
+          "60",
           // "120",
           // "240",
           // "1D",
@@ -121,6 +123,7 @@ const mockDataFeed: ChartingLibraryWidgetOptions["datafeed"] = {
       // Convert resolution to API format if needed
       const apiResolution = resolution === "1D" ? "1440" : resolution;
       
+      // ==========================
       // const response = await axios.get(`/api/candlesticks`, {
       //   params: {
       //     // token: 'twzY8ahJ8FEtc7db81ZrPrVwxzHu7WXGcmEKXXtpump',
@@ -133,23 +136,74 @@ const mockDataFeed: ChartingLibraryWidgetOptions["datafeed"] = {
       // });
 
       // const chartData = response.data;
+      // ==========================
 
+      // ==========================
+      // const chartData = [{
+      //   "mint": "7yY7aQjmTzUe9mZCUHiCPs8ZTcyx41ucoxFjHdGrpump",
+      //   "timestamp": 1735798380,
+      //   "open": 3.83360252162478e-7,
+      //   "high": 3.83496936874864e-7,
+      //   "low": 3.83360252162478e-7,
+      //   "close": 3.83496936874864e-7,
+      //   "volume": 39603922,
+      //   "slot": 311347339,
+      //   "is_5_min": false,
+      //   "is_1_min": true
+      // },
+      // {
+      //   "mint": "7yY7aQjmTzUe9mZCUHiCPs8ZTcyx41ucoxFjHdGrpump",
+      //   "timestamp": 1735798440,
+      //   "open": 3.83496936874864e-7,
+      //   "high": 3.84187567533852e-7,
+      //   "low": 3.83496936874864e-7,
+      //   "close": 3.84187567533852e-7,
+      //   "volume": 200000002,
+      //   "slot": 311347520,
+      //   "is_5_min": false,
+      //   "is_1_min": true
+      // },
+      // {
+      //   "mint": "7yY7aQjmTzUe9mZCUHiCPs8ZTcyx41ucoxFjHdGrpump",
+      //   "timestamp": 1735798560,
+      //   "open": 3.84187567533852e-7,
+      //   "high": 3.8453311585323e-7,
+      //   "low": 3.84187567533852e-7,
+      //   "close": 3.8453311585323e-7,
+      //   "volume": 100000000,
+      //   "slot": 311347749,
+      //   "is_5_min": false,
+      //   "is_1_min": true
+      // }].filter((item: any) => {
+      //   return item.timestamp >= from && item.timestamp <= to;
+      // }).map((bar) => ({
+      //   close: parseFloat(bar.close),
+      //   open: parseFloat(bar.open),
+      //   high: parseFloat(bar.high),
+      //   low: parseFloat(bar.low),
+      //   time: Math.floor(bar.timestamp) * 1000,
+      //   volume: parseFloat(bar.volume),
+      // })) as Bar[];
+      // ==========================
+
+      // ==========================
+      console.log('symbolInfo')
       const response = await api.get<GraphDetails[]>(
-        `/v1/token/ohlc?token=${"FH7vPw241wjUkCugaLZN9HFxL6VzuCkyeYg5f34Q4bDg"}`
+        `/v1/token/ohlc?token=${"7d7XnCD4ZJ9LmCG9CazMzuV7E2CXLyXNDh1PUPigAUhM"}`
       );
-
       const chartData = response.data
         .filter((item: any) => {
-          return item.unix_timestamp >= from && item.unix_timestamp <= to;
+          return item.unixTimestamp >= from && item.unixTimestamp <= to;
         })
         .map((bar) => ({
           close: parseFloat(bar.close),
           open: parseFloat(bar.open),
           high: parseFloat(bar.high),
           low: parseFloat(bar.low),
-          time: Math.floor(bar.unix_timestamp) * 1000,
+          time: Math.floor(bar.unixTimestamp) * 1000,
           volume: parseFloat(bar.volume),
         })) as Bar[];
+      // ==========================
 
       
       if (!chartData || chartData.length === 0) {
@@ -294,9 +348,9 @@ export const TVChartContainer = ({
           "timeScale.fixLeftEdge": true,
           // "timeScale.lockVisibleTimeRangeOnResize": true,
         },
-        interval: "5" as ResolutionString,
+        interval: "60" as ResolutionString,
         timeframe: {
-          from: Math.floor(Date.now() / 1000) - (60 * 60 * 24 * 2),
+          from: Math.floor(Date.now() / 1000) - (60 * 60 * 24 * 5),
           to: Math.floor(Date.now() / 1000),
         },
         // timeframe: "2D",
