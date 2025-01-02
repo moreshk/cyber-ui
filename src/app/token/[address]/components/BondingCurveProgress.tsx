@@ -4,7 +4,16 @@ import { Crown } from "lucide-react";
 import { Line } from "rc-progress";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
+import { config } from "@/config";
 const updateKingOfTheHill = async (token?: string) => {
+  try {
+    await api.get(`/v1/token/king-of-the-hill?token=${token}`);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const tokenMigration = async (token?: string) => {
   try {
     await api.get(`/v1/token/king-of-the-hill?token=${token}`);
   } catch (e) {
@@ -28,8 +37,11 @@ const BondingCurveProgress = () => {
         reserveTwo: number;
       }>(`/v1/token/reserves?token=${data?.mintAddress}`);
       setReserves(response);
-      if (reserves && +reserves?.reserveOne < 400_000_000) {
+      if (reserves && +reserves?.reserveOne < config.kingOfTheHill) {
         updateKingOfTheHill(data?.mintAddress);
+      }
+      if (reserves && +reserves.reserveOne < config.migration) {
+        tokenMigration();
       }
     } catch (e) {
       console.log(e);
