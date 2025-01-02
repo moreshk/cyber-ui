@@ -87,8 +87,8 @@ export const swapTx = async (
     const args: SwapArgs = {
       amount: new anchor.BN(
         type === 2
-          ? parseFloat(amount) * 1000_000_000
-          : parseFloat(amount) * 1000_000_000
+          ? (Number(amount) * 1_000_000_000).toString()
+          : (Number(amount) * 1_000_000_000).toString()
       ),
       style: new anchor.BN(type),
     };
