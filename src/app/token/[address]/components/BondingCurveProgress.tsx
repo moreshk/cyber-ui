@@ -3,7 +3,7 @@ import useTokenDetailsStore from "@/store/useTokenDetailsStore";
 import { Crown } from "lucide-react";
 import { Line } from "rc-progress";
 import { useEffect, useState } from "react";
-
+import dayjs from "dayjs";
 const updateKingOfTheHill = async (token?: string) => {
   try {
     await api.get(`/v1/token/king-of-the-hill?token=${token}`);
@@ -85,10 +85,17 @@ const BondingCurveProgress = () => {
             strokeColor="#F9BF85"
             trailWidth={4}
           />
-          <div className="flex items-center gap-2 text-yellow-500 mt-2">
-            <Crown size={20} />
-            <span>crowned king of the hill on 12/26/2024, 10:28:19 AM</span>
-          </div>
+          {data?.kingOfTheHillTimeStamp && (
+            <div className="flex items-center gap-2 text-yellow-500 mt-2">
+              <Crown size={20} />
+              <span>
+                crowned king of the hill on{" "}
+                {dayjs(data?.kingOfTheHillTimeStamp).format(
+                  "YYYY-MM-DD HH:mm:ss"
+                )}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     );
