@@ -3,23 +3,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import BuyToken from "./BuyToken";
 import SellToken from "./SellToken";
+import useTokenDetailsStore from "@/store/useTokenDetailsStore";
 
 export default function Swap() {
-  // const migration = async () => {
-  //   try {
-  //     setMigration(true);
-  //     await api.get(`/v1/token/migration?token=${data?.mintAddress}`);
-  //     setMigration(true);
-  //   } catch (e) {
-  //     setMigration(false);
-  //     console.log(e);
-  //   }
-  // };
+  const { data } = useTokenDetailsStore();
 
-  // useEffect(() => {
-  //   migration();
-  // }, []);
-
+  if (data?.migrationStatus === "in-progress") {
+    return <div>Migration In progress</div>;
+  }
+  if (data?.migrationStatus === "completed") return <a href="">Radium pool</a>;
   return (
     <Tabs defaultValue="buy" className="w-full">
       <TabsList className="grid w-full grid-cols-2">

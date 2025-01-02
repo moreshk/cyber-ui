@@ -18,6 +18,7 @@ export interface Coin {
   deletedAt: null;
   marketCap?: string;
   agent: Agents;
+  migrationStatus: "not-started" | "in-progress" | "completed";
 }
 export interface Agents {
   id: number;

@@ -49,8 +49,8 @@ const SellToken = () => {
 
   const handleQuickAmount = (percentage: number) => {
     if (balance > 0) {
-      const calculatedAmount = ((balance * percentage) / 100).toFixed(2);
-      setAmount(calculatedAmount);
+      const calculatedAmount = (balance * percentage) / 100;
+      setAmount(`${calculatedAmount}`);
     }
   };
 
