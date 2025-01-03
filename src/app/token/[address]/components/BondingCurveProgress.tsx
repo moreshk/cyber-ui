@@ -49,9 +49,10 @@ const BondingCurveProgress = () => {
   if (reserves) {
     const bondingCurveProgress = (
       100 -
-      ((reserves?.reserveOne - 200_000_000) / 800_000_000) * 100
+      ((reserves?.reserveOne - 900_000_000) / 100_000_000) * 100 // Update this as per bonding curve limit
     ).toFixed(2);
-
+    // 100_000_000 is the bonding curve limit, 900_000_000 is the current reserve
+    
     return (
       <div className="space-y-6 pt-4">
         <div className="space-y-2">
