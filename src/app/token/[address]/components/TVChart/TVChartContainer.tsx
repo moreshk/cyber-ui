@@ -370,7 +370,7 @@ export const TVChartContainer = ({
         },
         interval: "1" as ResolutionString,
         timeframe: {
-          from: Math.floor(Date.now() / 1000) - 60 * 60 * 24 * 1,
+          from: Math.floor(Date.now() / 1000) - 60 * 60 * 6 * 1,
           to: Math.floor(Date.now() / 1000),
         },
         // timeframe: "2D",
