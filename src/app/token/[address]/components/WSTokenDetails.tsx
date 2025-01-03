@@ -18,15 +18,20 @@ const WSTokenDetails = () => {
 
     rws.onopen = () => {
       heartbeat = setInterval(() => {
-        rws.send("ping");
+        return rws.send(
+          JSON.stringify({ action: "subscribe", topic: address })
+        );
       }, 3000);
     };
     rws.onmessage = (event) => {
       if (event.data === "pong") {
         return;
       }
+      if (event.data === "subscribe") {
+        return;
+      }
+      console.log(event?.data);
       const data = JSON.parse(event.data);
-
       if (data.event === "comment") {
         mutate((oldData: TokenDetails | null) => {
           if (oldData) {

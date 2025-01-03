@@ -246,11 +246,16 @@ const createDataFeed = (
     });
     rws.onopen = () => {
       heartbeat = setInterval(() => {
-        rws.send("ping");
+        return rws.send(
+          JSON.stringify({ action: "subscribe", topic: address })
+        );
       }, 3000);
     };
     rws.onmessage = (event) => {
       if (event.data === "pong") {
+        return;
+      }
+      if (event.data === "Subscribed to topic: address") {
         return;
       }
       const data = JSON.parse(event.data);
@@ -352,7 +357,7 @@ export const TVChartContainer = ({
           // "scalesProperties.showRightScale": true,
           // "paneProperties.rightMargin": 12,
           "scalesProperties.fontSize": 10,
-          
+
           // "scalesProperties.position": "right",
           // "paneProperties.legendProperties.showLegend": true,
           // "paneProperties.legendProperties.showSeriesTitle": false,
@@ -402,10 +407,8 @@ export const TVChartContainer = ({
           "mainSeriesProperties.priceLineWidth": 1,
           // "mainSeriesProperties.priceLineStyle": 0,
           "scalesProperties.fontSize": 10,
-          "priceScaleSelectionStrategyName": "right",
+          priceScaleSelectionStrategyName: "right",
           "scalesProperties.showSymbolLabels": false,
-          
-          
         });
 
         // Set the chart type to candlesticks

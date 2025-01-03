@@ -18,11 +18,16 @@ const WSAgentDetails = () => {
 
     rws.onopen = () => {
       heartbeat = setInterval(() => {
-        rws.send("ping");
+        return rws.send(
+          JSON.stringify({ action: "subscribe", topic: params.id })
+        );
       }, 3000);
     };
     rws.onmessage = (event) => {
       if (event.data === "pong") {
+        return;
+      }
+      if (event.data === "Subscribed to topic: address") {
         return;
       }
       const data = JSON.parse(event.data);
