@@ -247,7 +247,7 @@ const createDataFeed = (
     rws.onopen = () => {
       heartbeat = setInterval(() => {
         return rws.send(
-          JSON.stringify({ action: "subscribe", topic: address })
+          JSON.stringify({ action: "subscribe", topic: mintAddress })
         );
       }, 3000);
     };
