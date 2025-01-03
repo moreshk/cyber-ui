@@ -67,6 +67,8 @@ const BuyToken = () => {
             skipPreflight: true,
           }
         );
+        await connection.confirmTransaction(signature, "finalized");
+        
         await api.post<{ serializedTransaction: string }>("/v1/coin/minted", {
           token: data.mintAddress,
           tx: signature,
