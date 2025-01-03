@@ -368,9 +368,9 @@ export const TVChartContainer = ({
           "timeScale.fixLeftEdge": true,
           // "timeScale.lockVisibleTimeRangeOnResize": true,
         },
-        interval: "60" as ResolutionString,
+        interval: "1" as ResolutionString,
         timeframe: {
-          from: Math.floor(Date.now() / 1000) - 60 * 60 * 24 * 5,
+          from: Math.floor(Date.now() / 1000) - 60 * 60 * 24 * 1,
           to: Math.floor(Date.now() / 1000),
         },
         // timeframe: "2D",
