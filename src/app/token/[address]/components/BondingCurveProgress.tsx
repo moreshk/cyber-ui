@@ -31,10 +31,10 @@ const BondingCurveProgress = () => {
 
   const getReservers = async () => {
     try {
-      if (reserves && +reserves?.reserveOne < config.kingOfTheHill) {
+      if (reserves && +reserves?.reserveOne <= config.kingOfTheHill) {
         updateKingOfTheHill(data?.mintAddress);
       }
-      if (reserves && +reserves.reserveOne < config.migration) {
+      if (reserves && +reserves.reserveOne <= config.migration) {
         tokenMigration();
       }
     } catch (e) {
