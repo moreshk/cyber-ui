@@ -112,7 +112,54 @@ const BondingCurveProgress = () => {
       </div>
     );
   }
-  return null;
+  return (
+    <div className="space-y-6 pt-4">
+      <div className="space-y-2">
+        <div className="flex justify-between items-center">
+          <span className="text-lg">bonding curve progress: {0}%</span>
+          <button className="opacity-60 hover:opacity-100">
+            <span className="text-xl">ⓘ</span>
+          </button>
+        </div>
+        <Line
+          percent={0}
+          strokeWidth={4}
+          strokeColor="#8066BD"
+          trailWidth={4}
+        />
+        <p className="text-gray-400 mt-2">
+          graduate this coin to raydium at $77,628 market cap.
+          <br />
+          there is {(0).toFixed(2)} SOL in the bonding curve.
+        </p>
+      </div>
+      <div className="space-y-2">
+        <div className="flex justify-between items-center text-gray-400">
+          <span className="text-lg">king of the hill progress: {0}%</span>
+          <button className="opacity-60 hover:opacity-100">
+            <span className="text-xl">ⓘ</span>
+          </button>
+        </div>
+        <Line
+          percent={0}
+          strokeWidth={4}
+          strokeColor="#F9BF85"
+          trailWidth={4}
+        />
+        {data?.kingOfTheHillTimeStamp && (
+          <div className="flex items-center gap-2 text-yellow-500 mt-2">
+            <Crown size={20} />
+            <span>
+              crowned king of the hill on{" "}
+              {dayjs(data?.kingOfTheHillTimeStamp).format(
+                "YYYY-MM-DD HH:mm:ss"
+              )}
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default BondingCurveProgress;
