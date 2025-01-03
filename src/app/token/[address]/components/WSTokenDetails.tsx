@@ -69,6 +69,7 @@ const WSTokenDetails = () => {
       }
       if (data.event === "new-tx") {
         swrMutate(`/v1/token/reserves?token=${address}`);
+        swrMutate(`token-holders`);
       }
     };
 
