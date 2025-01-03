@@ -22,7 +22,7 @@ const WSHome = () => {
       if (event.data === "pong") {
         return;
       }
-      if (event.data === "subscribe") {
+      if (event.data === "subscribed") {
         return;
       }
 

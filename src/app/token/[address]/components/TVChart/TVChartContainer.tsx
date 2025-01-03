@@ -255,7 +255,7 @@ const createDataFeed = (
       if (event.data === "pong") {
         return;
       }
-      if (event.data === "subscribe") {
+      if (event.data === "subscribed") {
         return;
       }
       const data = JSON.parse(event.data);
