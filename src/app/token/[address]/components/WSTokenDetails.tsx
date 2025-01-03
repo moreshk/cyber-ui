@@ -5,6 +5,7 @@ import useTokenDetailsStore, {
   TokenDetails,
 } from "@/store/useTokenDetailsStore";
 import { useParams } from "next/navigation";
+import { mutate as swrMutate } from "swr";
 
 const WSTokenDetails = () => {
   const { mutate } = useTokenDetailsStore();
@@ -65,6 +66,9 @@ const WSTokenDetails = () => {
             return null;
           }
         });
+      }
+      if (data.event === "new-tx") {
+        swrMutate(`/v1/token/reserves?token=${address}`);
       }
     };
 

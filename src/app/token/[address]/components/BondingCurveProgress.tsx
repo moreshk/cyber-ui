@@ -2,9 +2,10 @@ import api from "@/lib/axios";
 import useTokenDetailsStore from "@/store/useTokenDetailsStore";
 import { Crown } from "lucide-react";
 import { Line } from "rc-progress";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import dayjs from "dayjs";
 import { config } from "@/config";
+import useSWR from "swr";
 const updateKingOfTheHill = async (token?: string) => {
   try {
     await api.get(`/v1/token/king-of-the-hill?token=${token}`);
@@ -23,20 +24,13 @@ const tokenMigration = async (token?: string) => {
 
 const BondingCurveProgress = () => {
   const { data } = useTokenDetailsStore();
-  const [reserves, setReserves] = useState<
-    | {
-        reserveOne: number;
-        reserveTwo: number;
-      }
-    | undefined
-  >();
+  const { data: reserves } = useSWR<{
+    reserveOne: number;
+    reserveTwo: number;
+  }>(`/v1/token/reserves?token=${data?.mintAddress}`);
+
   const getReservers = async () => {
     try {
-      const { data: response } = await api.get<{
-        reserveOne: number;
-        reserveTwo: number;
-      }>(`/v1/token/reserves?token=${data?.mintAddress}`);
-      setReserves(response);
       if (reserves && +reserves?.reserveOne < config.kingOfTheHill) {
         updateKingOfTheHill(data?.mintAddress);
       }
@@ -50,7 +44,7 @@ const BondingCurveProgress = () => {
 
   useEffect(() => {
     getReservers();
-  }, [data]);
+  }, [reserves]);
 
   if (reserves) {
     const bondingCurveProgress = (

@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import useAgentDetailsStore, {
   AgentDetails,
 } from "@/store/useAgentDetailsStore";
-
+import { mutate as swrMutate } from "swr";
 const WSAgentDetails = () => {
   const { mutate } = useAgentDetailsStore();
   const params = useParams<{ id: string }>();
@@ -43,6 +43,9 @@ const WSAgentDetails = () => {
             return null;
           }
         });
+      }
+      if (data.event === "new-tx") {
+        swrMutate(`/v1/token/reserves?token=${params.id}`);
       }
     };
 
