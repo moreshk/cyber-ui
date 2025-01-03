@@ -70,7 +70,7 @@ const BondingCurveProgress = () => {
             trailWidth={4}
           />
           <p className="text-gray-400 mt-2">
-            graduate this coin to raydium at $77,628 market cap.
+            graduate this coin to raydium at $100,000 market cap.
             <br />
             there is {(+reserves.reserveTwo - 30).toFixed(2)} SOL in the bonding
             curve.
@@ -122,7 +122,7 @@ const BondingCurveProgress = () => {
           trailWidth={4}
         />
         <p className="text-gray-400 mt-2">
-          graduate this coin to raydium at $77,628 market cap.
+          graduate this coin to raydium at $100,000 market cap.
           <br />
           there is {(0).toFixed(2)} SOL in the bonding curve.
         </p>

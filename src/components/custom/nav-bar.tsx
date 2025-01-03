@@ -7,7 +7,7 @@ import { Shadow } from "./shadow";
 const Navbar = () => {
   return (
     <>
-      <div className="sticky top-0 shadow-sm py-4 px-5 bg-[#040B11]">
+      <div className="sticky top-0 shadow-sm py-4 px-5 z-10 bg-[#040B11]">
         <div className="mx-auto max-w-7xl flex justify-between items-center">
           <Link href="/">
             <svg
