@@ -3,6 +3,10 @@ import useTokenDetailsStore from "@/store/useTokenDetailsStore";
 import useTxDetailsStore from "@/store/useTokenTxStore";
 import { Clock, ExternalLink } from "lucide-react";
 import { useEffect } from "react";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 
 const TxList = () => {
   const { data, fetchTxs } = useTxDetailsStore();
@@ -57,7 +61,9 @@ const TxList = () => {
                 <td className="py-3 px-4">
                   <div className="flex items-center gap-2 text-gray-400">
                     <Clock className="w-4 h-4" />
-                    <span>{tx.timestamp}</span>
+                    {tx.timestamp && (
+                      <span> {dayjs(+tx.timestamp * 1000).fromNow()}</span>
+                    )}
                   </div>
                 </td>
                 <td className="py-3 px-4 text-right">

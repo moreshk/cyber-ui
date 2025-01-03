@@ -6,10 +6,12 @@ import useTokenDetailsStore, {
 } from "@/store/useTokenDetailsStore";
 import { useParams } from "next/navigation";
 import { mutate as swrMutate } from "swr";
+import useTxDetailsStore from "@/store/useTokenTxStore";
 
 const WSTokenDetails = () => {
   const { mutate } = useTokenDetailsStore();
   const { address } = useParams() as { address: string };
+  const { fetchTxs } = useTxDetailsStore();
 
   useEffect(() => {
     let heartbeat: any;
@@ -70,6 +72,7 @@ const WSTokenDetails = () => {
       if (data.event === "new-tx") {
         swrMutate(`/v1/token/reserves?token=${address}`);
         swrMutate(`token-holders`);
+        fetchTxs(address);
       }
     };
 
