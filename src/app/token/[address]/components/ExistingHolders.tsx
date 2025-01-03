@@ -54,7 +54,7 @@ const useTokenHolders = (
   const { data, error, mutate } = useSWR<Holder[]>(
     mintAddress ? ["token-holders", mintAddress] : null,
     ([, mint]) => fetchTokenHolders(connection, mint as string),
-    { revalidateOnFocus: false }
+    { refreshInterval: 5000, revalidateOnFocus: true }
   );
 
   return {

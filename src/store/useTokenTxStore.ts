@@ -20,7 +20,6 @@ const useTxDetailsStore = create<TxDetailsStore>((set) => ({
       const { data } = await api.get<Tx[]>(
         `/v1/token/tx-list?token=${address}`
       );
-      console.log(data);
       set({ data, isLoading: false });
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
